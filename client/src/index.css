@@ -138,11 +138,11 @@ input[type='number'] {
     background-color: #f5f5f5 !important;
   }
 
-  /* Linha TOTAL GERAL — cinza escuro com texto branco */
+  /* Linha TOTAL GERAL — cinza claro com texto preto */
   .comprovante-print-wrapper .row-total-geral,
   .comprovante-print-wrapper .row-total-geral td {
-    background-color: #9a9a9a !important;
-    color: white !important;
+    background-color: #d4d4d4 !important;
+    color: black !important;
   }
 
   /* Imagens (logos) preservam cores originais e fundo transparente */

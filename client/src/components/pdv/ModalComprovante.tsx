@@ -402,21 +402,21 @@ export default function ModalComprovante({
                   {formatMoney(venda.subtotal)}
                 </td>
               </tr>
-              {/* Linha TOTAL GERAL — fundo cinza escuro, dentro da tabela */}
+              {/* Linha TOTAL GERAL — fundo cinza claro com texto preto */}
               <tr
-                className="row-total-geral font-bold text-white"
-                style={{ backgroundColor: '#9a9a9a', color: 'white' }}
+                className="row-total-geral font-bold"
+                style={{ backgroundColor: '#d4d4d4', color: 'black' }}
               >
                 <td
                   colSpan={5}
                   className="px-2 py-1.5 text-right text-sm"
-                  style={{ backgroundColor: '#9a9a9a', color: 'white' }}
+                  style={{ backgroundColor: '#d4d4d4', color: 'black' }}
                 >
                   TOTAL GERAL
                 </td>
                 <td
                   className="px-2 py-1.5 text-right text-base"
-                  style={{ backgroundColor: '#9a9a9a', color: 'white' }}
+                  style={{ backgroundColor: '#d4d4d4', color: 'black' }}
                 >
                   {formatMoney(venda.total)}
                 </td>
