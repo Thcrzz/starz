@@ -1,8 +1,8 @@
-import { Button } from '@/components/ui/button';
 import Carrinho from '@/components/pdv/Carrinho';
 import SeletorVendedor from '@/components/pdv/SeletorVendedor';
 import SeletorCliente from '@/components/pdv/SeletorCliente';
 import ParteFinanceira from '@/components/pdv/ParteFinanceira';
+import AcoesPDV from '@/components/pdv/AcoesPDV';
 
 /**
  * Página de PDV — layout base com duas colunas.
@@ -37,36 +37,7 @@ export default function PDVPage() {
 
         <SeletorCliente />
 
-        <section className="flex flex-col gap-2">
-          <Button
-            disabled
-            className="w-full py-6 text-base font-bold text-white"
-            style={{ backgroundColor: '#16a34a' }}
-          >
-            Finalizar Venda
-          </Button>
-          <Button
-            disabled
-            className="w-full py-6 text-base font-bold text-white"
-            style={{ backgroundColor: '#15803d' }}
-          >
-            Finalizar Venda e Imprimir Pedido
-          </Button>
-          <Button
-            disabled
-            className="w-full py-6 text-base font-bold text-white"
-            style={{ backgroundColor: '#d97706' }}
-          >
-            Finalizar Venda e Emitir NFC-e
-          </Button>
-          <Button
-            disabled
-            className="w-full py-6 text-base font-bold text-white"
-            style={{ backgroundColor: '#dc2626' }}
-          >
-            Cancelar Venda
-          </Button>
-        </section>
+        <AcoesPDV />
       </aside>
     </div>
   );
