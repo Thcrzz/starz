@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Plus, Search } from 'lucide-react';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { buscarProdutos } from '@/services/produtosService';
 import { usePDVStore } from '@/store/pdvStore';
@@ -108,7 +107,7 @@ export default function BuscaProduto() {
 
   return (
     <div className="flex items-center gap-2">
-      <div ref={wrapperRef} className="relative flex-1">
+      <div ref={wrapperRef} className="relative w-full">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={termo}
@@ -222,19 +221,6 @@ export default function BuscaProduto() {
           </div>
         )}
       </div>
-
-      <Button
-        type="button"
-        variant="outline"
-        onClick={() => {
-          setNomeInicialAvulso('');
-          setModalAvulso(true);
-        }}
-        className="flex-shrink-0 gap-1"
-      >
-        <Plus className="h-4 w-4" />
-        Produto Avulso
-      </Button>
 
       {modalVariacoes && (
         <ModalVariacoes
