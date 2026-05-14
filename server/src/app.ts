@@ -11,6 +11,7 @@ dotenv.config();
 // Importa o database depois do dotenv para garantir variáveis carregadas
 import './db/database';
 import authRouter from './routes/auth';
+import produtosRouter from './routes/produtos';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -25,6 +26,9 @@ app.get('/api/health', (_req, res) => {
 
 // Rotas de autenticação
 app.use('/api/auth', authRouter);
+
+// Rotas de produtos (busca para PDV, produto avulso, etc)
+app.use('/api/produtos', produtosRouter);
 
 // Em produção, serve o build do front (../client/dist)
 if (process.env.NODE_ENV === 'production') {
