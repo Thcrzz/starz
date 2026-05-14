@@ -141,7 +141,7 @@ input[type='number'] {
   /* Linha TOTAL GERAL — cinza escuro com texto branco */
   .comprovante-print-wrapper .row-total-geral,
   .comprovante-print-wrapper .row-total-geral td {
-    background-color: #4a4a4a !important;
+    background-color: #9a9a9a !important;
     color: white !important;
   }
 

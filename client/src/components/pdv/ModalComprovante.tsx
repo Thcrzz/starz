@@ -354,18 +354,18 @@ export default function ModalComprovante({
               {/* Linha TOTAL GERAL — fundo cinza escuro, dentro da tabela */}
               <tr
                 className="row-total-geral font-bold text-white"
-                style={{ backgroundColor: '#4a4a4a', color: 'white' }}
+                style={{ backgroundColor: '#9a9a9a', color: 'white' }}
               >
                 <td
                   colSpan={5}
                   className="px-2 py-1.5 text-right text-sm"
-                  style={{ backgroundColor: '#4a4a4a', color: 'white' }}
+                  style={{ backgroundColor: '#9a9a9a', color: 'white' }}
                 >
                   TOTAL GERAL
                 </td>
                 <td
                   className="px-2 py-1.5 text-right text-base"
-                  style={{ backgroundColor: '#4a4a4a', color: 'white' }}
+                  style={{ backgroundColor: '#9a9a9a', color: 'white' }}
                 >
                   {formatMoney(venda.total)}
                 </td>
