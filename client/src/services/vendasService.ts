@@ -12,6 +12,12 @@ export interface NovoItemVenda {
   e_avulso: boolean;
 }
 
+export interface NovoPagamento {
+  forma: string;
+  valor: number;
+  parcelas?: number;
+}
+
 export interface NovaVendaPayload {
   cliente_id?: number;
   retirado_por?: string;
@@ -22,11 +28,22 @@ export interface NovaVendaPayload {
   desconto: number;
   observacao?: string;
   tipo_operacao?: 'venda' | 'orcamento';
+  pagamentos?: NovoPagamento[];
   itens: NovoItemVenda[];
+}
+
+export interface PagamentoSalvo {
+  id: number;
+  venda_id: number;
+  forma: string;
+  valor: number;
+  parcelas: number;
+  ordem: number;
 }
 
 export interface VendaCompleta extends Venda {
   itens: ItemVenda[];
+  pagamentos?: PagamentoSalvo[];
 }
 
 export interface DadosComprovante {

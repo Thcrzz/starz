@@ -3,6 +3,7 @@ import type {
   EstadoPDV,
   ItemCarrinho,
   ItemCarrinhoCalculado,
+  Pagamento,
 } from '@/types/pdv';
 
 interface PDVStore extends EstadoPDV {
@@ -22,6 +23,13 @@ interface PDVStore extends EstadoPDV {
   setObservacao: (obs: string) => void;
   setTipoOperacao: (tipo: 'venda' | 'orcamento') => void;
   setTipoDesconto: (tipo: 'valor' | 'porcentagem') => void;
+  /** Múltiplas formas de pagamento */
+  adicionarPagamento: (forma: string, valor: number, parcelas?: number) => void;
+  removerPagamento: (id: string) => void;
+  atualizarPagamento: (id: string, dados: Partial<Pagamento>) => void;
+  limparPagamentos: () => void;
+  totalPago: () => number;
+  diferencaPagamento: () => number;
   subtotal: () => number;
   totalComDesconto: () => number;
   /** Valor absoluto do desconto geral (em R$, qualquer que seja o tipo) */
@@ -43,7 +51,16 @@ const estadoInicial: EstadoPDV = {
   tipo_desconto: 'valor',
   observacao: undefined,
   tipo_operacao: 'venda',
+  pagamentos: [],
 };
+
+function sincronizarLegado(pagamentos: Pagamento[]): Pick<EstadoPDV, 'forma_pagamento' | 'parcelas'> {
+  const primeiro = pagamentos[0];
+  return {
+    forma_pagamento: primeiro?.forma,
+    parcelas: primeiro?.parcelas ?? 1,
+  };
+}
 
 function recalculaTotal(item: ItemCarrinho): ItemCarrinho {
   const bruto = item.preco_unitario * item.quantidade;
@@ -131,6 +148,62 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
   setTipoDesconto: (tipo) =>
     // troca o tipo e zera o valor — evita interpretação ambígua do número anterior
     set({ tipo_desconto: tipo, desconto_geral: 0 }),
+
+  adicionarPagamento: (forma, valor, parcelas) =>
+    set((state) => {
+      const novo: Pagamento = {
+        id: crypto.randomUUID(),
+        forma,
+        valor: Math.max(0, valor),
+        parcelas: forma === 'credito' ? Math.max(1, parcelas ?? 1) : undefined,
+      };
+      const pagamentos = [...state.pagamentos, novo];
+      return { pagamentos, ...sincronizarLegado(pagamentos) };
+    }),
+
+  removerPagamento: (id) =>
+    set((state) => {
+      const pagamentos = state.pagamentos.filter((p) => p.id !== id);
+      return { pagamentos, ...sincronizarLegado(pagamentos) };
+    }),
+
+  atualizarPagamento: (id, dados) =>
+    set((state) => {
+      const pagamentos = state.pagamentos.map((p) =>
+        p.id === id
+          ? {
+              ...p,
+              ...dados,
+              valor:
+                dados.valor !== undefined
+                  ? Math.max(0, dados.valor)
+                  : p.valor,
+            }
+          : p,
+      );
+      return { pagamentos, ...sincronizarLegado(pagamentos) };
+    }),
+
+  limparPagamentos: () =>
+    set({ pagamentos: [], forma_pagamento: undefined, parcelas: 1 }),
+
+  totalPago: () =>
+    get().pagamentos.reduce((acc, p) => acc + (p.valor || 0), 0),
+
+  diferencaPagamento: () => {
+    const state = get();
+    const sub = state.itens.reduce((acc, i) => acc + i.total_item, 0);
+    const tot =
+      state.tipo_desconto === 'porcentagem'
+        ? Math.max(
+            0,
+            sub *
+              (1 - Math.min(100, Math.max(0, state.desconto_geral)) / 100),
+          )
+        : Math.max(0, sub - state.desconto_geral);
+    const pago = state.pagamentos.reduce((acc, p) => acc + (p.valor || 0), 0);
+    return tot - pago;
+  },
 
   subtotal: () => get().itens.reduce((acc, i) => acc + i.total_item, 0),
 

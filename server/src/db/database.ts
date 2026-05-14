@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import { up as migration001 } from './migrations/001_initial';
 import { up as migration002 } from './migrations/002_movimentacoes_estoque';
 import { up as migration003 } from './migrations/003_tipo_operacao';
+import { up as migration004 } from './migrations/004_pagamentos';
 
 dotenv.config();
 
@@ -67,6 +68,7 @@ export function inicializarBanco(): void {
   executarMigration('001_initial', migration001);
   executarMigration('002_movimentacoes_estoque', migration002);
   executarMigration('003_tipo_operacao', migration003);
+  executarMigration('004_pagamentos', migration004);
 }
 
 // Inicializa imediatamente ao importar este módulo

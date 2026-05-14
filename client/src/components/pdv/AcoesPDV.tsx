@@ -19,6 +19,7 @@ import {
 import ModalVendaConcluida from './ModalVendaConcluida';
 import ModalComprovante from './ModalComprovante';
 import ComprovantePrintInvisivel from './ComprovantePrintInvisivel';
+import { formatMoney } from '@/hooks/useMoneyInput';
 
 type Acao = 'simples' | 'imprimir' | 'nfce';
 
@@ -32,14 +33,21 @@ export default function AcoesPDV() {
   const parcelas = usePDVStore((s) => s.parcelas);
   const observacao = usePDVStore((s) => s.observacao);
   const tipoOperacao = usePDVStore((s) => s.tipo_operacao);
+  const pagamentos = usePDVStore((s) => s.pagamentos);
   const limparCarrinho = usePDVStore((s) => s.limparCarrinho);
   const itensComDescontoDistribuido = usePDVStore(
     (s) => s.itensComDescontoDistribuido,
   );
   const descontoGeralAbsoluto = usePDVStore((s) => s.descontoGeralAbsoluto);
+  const totalComDesconto = usePDVStore((s) => s.totalComDesconto());
+  const totalPago = usePDVStore((s) => s.totalPago());
+  const diferenca = usePDVStore((s) => s.diferencaPagamento());
 
   const [confirmandoCancelar, setConfirmandoCancelar] = useState(false);
   const [acaoEmAndamento, setAcaoEmAndamento] = useState<Acao | null>(null);
+  const [confirmandoDiferenca, setConfirmandoDiferenca] = useState<Acao | null>(
+    null,
+  );
 
   const [vendaConcluida, setVendaConcluida] = useState<VendaCompleta | null>(
     null,
@@ -74,32 +82,52 @@ export default function AcoesPDV() {
   async function finalizar(acao: Acao) {
     if (carrinhoVazio) return;
 
-    // Orçamento não exige forma de pagamento
-    if (!ehOrcamento && !formaPagamento) {
-      toast.error('Selecione a forma de pagamento');
-      return;
-    }
-    if (!ehOrcamento && formaPagamento === 'fiado' && !clienteId) {
-      toast.error('Venda a prazo requer identificação do cliente');
-      return;
+    // Orçamento não exige forma de pagamento nem conferência
+    if (!ehOrcamento) {
+      if (pagamentos.length === 0) {
+        toast.error('Adicione ao menos uma forma de pagamento');
+        return;
+      }
+      const temFiadoSemCli =
+        pagamentos.some((p) => p.forma === 'fiado') && !clienteId;
+      if (temFiadoSemCli) {
+        toast.error('Venda a prazo requer identificação do cliente');
+        return;
+      }
+      // Se valores não conferem, pede confirmação antes de prosseguir
+      if (Math.abs(diferenca) >= 0.005) {
+        setConfirmandoDiferenca(acao);
+        return;
+      }
     }
 
+    await executarVenda(acao);
+  }
+
+  async function executarVenda(acao: Acao) {
     // Distribui o desconto geral proporcionalmente nos itens antes de salvar.
     // A tabela vendas continua guardando o desconto_geral em `desconto`, e
     // itens_venda recebe `desconto_item` já com o rateio incluído.
     const itensRateados = itensComDescontoDistribuido();
 
+    const formaPrincipal = pagamentos[0]?.forma ?? formaPagamento ?? null;
+    const temFiado = pagamentos.some((p) => p.forma === 'fiado');
+
     const payload: NovaVendaPayload = {
       cliente_id: clienteId,
       retirado_por: retiradoPor,
       vendedor_id: vendedorId,
-      situacao:
-        !ehOrcamento && formaPagamento === 'fiado' ? 'a_pagar' : 'pago',
-      forma_pagamento: formaPagamento ?? null,
+      situacao: !ehOrcamento && temFiado ? 'a_pagar' : 'pago',
+      forma_pagamento: formaPrincipal,
       parcelas,
       desconto: descontoGeralAbsoluto(),
       observacao,
       tipo_operacao: tipoOperacao,
+      pagamentos: pagamentos.map((p) => ({
+        forma: p.forma,
+        valor: p.valor,
+        parcelas: p.parcelas,
+      })),
       itens: itensRateados.map((i) => ({
         variacao_id: i.variacao_id,
         descricao_snapshot: i.descricao,
@@ -238,6 +266,49 @@ export default function AcoesPDV() {
               style={{ backgroundColor: '#dc2626' }}
             >
               Confirmar
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog
+        open={confirmandoDiferenca !== null}
+        onOpenChange={(o) => !o && setConfirmandoDiferenca(null)}
+      >
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Atenção: valores não conferem</DialogTitle>
+            <DialogDescription className="space-y-1">
+              <span className="block">
+                Total da venda: R$ {formatMoney(totalComDesconto)}
+              </span>
+              <span className="block">
+                Total dos pagamentos: R$ {formatMoney(totalPago)}
+              </span>
+              <span className="block font-semibold">
+                Diferença: R$ {formatMoney(Math.abs(diferenca))}{' '}
+                {diferenca > 0 ? '(faltando)' : '(sobrando)'}
+              </span>
+              <span className="mt-2 block">
+                Deseja continuar mesmo assim?
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="ghost"
+              onClick={() => setConfirmandoDiferenca(null)}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={() => {
+                const acao = confirmandoDiferenca;
+                setConfirmandoDiferenca(null);
+                if (acao) executarVenda(acao);
+              }}
+            >
+              Continuar mesmo assim
             </Button>
           </DialogFooter>
         </DialogContent>

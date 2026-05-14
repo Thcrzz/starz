@@ -40,6 +40,15 @@ export interface BuscaProdutoResultado {
   variacoes_do_grupo: BuscaProdutoResultado[];
 }
 
+export interface Pagamento {
+  /** uuid local pra identificar nas ações de update/remove */
+  id: string;
+  forma: string;
+  valor: number;
+  /** apenas para forma === 'credito' */
+  parcelas?: number;
+}
+
 export interface EstadoPDV {
   itens: ItemCarrinho[];
   cliente_id?: number;
@@ -47,10 +56,14 @@ export interface EstadoPDV {
   retirado_por?: string;
   vendedor_id?: number;
   vendedor_nome?: string;
+  /** legado — agora sempre derivado de pagamentos[0]. Mantido por compat. */
   forma_pagamento?: string;
+  /** legado — derivado de pagamentos[0]. Mantido por compat. */
   parcelas: number;
   desconto_geral: number;
   tipo_desconto: 'valor' | 'porcentagem';
   observacao?: string;
   tipo_operacao: 'venda' | 'orcamento';
+  /** Múltiplas formas de pagamento — fonte da verdade */
+  pagamentos: Pagamento[];
 }

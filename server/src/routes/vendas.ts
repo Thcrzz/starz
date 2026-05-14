@@ -25,6 +25,12 @@ interface ItemBody {
   e_avulso: boolean;
 }
 
+interface PagamentoBody {
+  forma: string;
+  valor: number;
+  parcelas?: number;
+}
+
 interface VendaBody {
   cliente_id?: number;
   retirado_por?: string;
@@ -35,7 +41,17 @@ interface VendaBody {
   desconto?: number;
   observacao?: string;
   tipo_operacao?: 'venda' | 'orcamento';
+  pagamentos?: PagamentoBody[];
   itens: ItemBody[];
+}
+
+interface PagamentoRow {
+  id: number;
+  venda_id: number;
+  forma: string;
+  valor: number;
+  parcelas: number;
+  ordem: number;
 }
 
 interface VendaRow {
@@ -71,7 +87,9 @@ interface ItemRow {
   e_avulso: number;
 }
 
-function carregarVendaCompleta(id: number): (VendaRow & { itens: ItemRow[] }) | null {
+function carregarVendaCompleta(
+  id: number,
+): (VendaRow & { itens: ItemRow[]; pagamentos: PagamentoRow[] }) | null {
   const venda = db
     .prepare(`SELECT * FROM vendas WHERE id = ? AND excluido_em IS NULL`)
     .get(id) as VendaRow | undefined;
@@ -79,7 +97,12 @@ function carregarVendaCompleta(id: number): (VendaRow & { itens: ItemRow[] }) | 
   const itens = db
     .prepare(`SELECT * FROM itens_venda WHERE venda_id = ? ORDER BY id`)
     .all(id) as ItemRow[];
-  return { ...venda, itens };
+  const pagamentos = db
+    .prepare(
+      `SELECT * FROM pagamentos_venda WHERE venda_id = ? ORDER BY ordem, id`,
+    )
+    .all(id) as PagamentoRow[];
+  return { ...venda, itens, pagamentos };
 }
 
 /**
@@ -230,6 +253,24 @@ router.post('/', autenticar, (req: Request, res: Response) => {
         }
       }
 
+      // 4) INSERT pagamentos (múltiplas formas de pagamento)
+      if (Array.isArray(body.pagamentos) && body.pagamentos.length > 0) {
+        const insertPag = db.prepare(
+          `INSERT INTO pagamentos_venda
+             (venda_id, forma, valor, parcelas, ordem)
+           VALUES (?, ?, ?, ?, ?)`,
+        );
+        body.pagamentos.forEach((p, idx) => {
+          insertPag.run(
+            vendaId,
+            String(p.forma),
+            Number(p.valor) || 0,
+            p.parcelas !== undefined ? Math.max(1, Number(p.parcelas)) : 1,
+            idx,
+          );
+        });
+      }
+
       return vendaId;
     })();
 
@@ -256,7 +297,7 @@ router.get('/:id', autenticar, (req: Request, res: Response) => {
 });
 
 interface DadosComprovante {
-  venda: VendaRow & { itens: ItemRow[] };
+  venda: VendaRow & { itens: ItemRow[]; pagamentos: PagamentoRow[] };
   cliente: unknown;
   vendedor: { nome: string } | null;
   empresa: {
