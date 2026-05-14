@@ -100,11 +100,6 @@ export default function ModalComprovante({
   const tituloSecaoItens = ehOrcamento ? 'ITENS DO ORÇAMENTO' : 'ITENS DA VENDA';
   const labelNumero = ehOrcamento ? 'Orçamento' : 'Venda';
 
-  const totalDescontos = venda
-    ? venda.itens.reduce((acc, i) => acc + (i.desconto_item ?? 0), 0) +
-      (venda.desconto ?? 0)
-    : 0;
-
   const dataPgto =
     venda?.situacao === 'pago' && venda.criado_em
       ? formatData(venda.criado_em)
@@ -281,49 +276,35 @@ export default function ModalComprovante({
               })}
             </tbody>
             <tfoot>
-              {/* Linha TOTAL — fundo cinza, com somatórios */}
+              {/* Linha SUBTOTAL — fundo cinza, dentro da tabela */}
               <tr className="bg-[#f5f5f5] font-bold print-row-odd">
-                <td
-                  colSpan={2}
-                  className="border border-zinc-300 px-2 py-1 text-right"
-                >
-                  TOTAL
-                </td>
+                <td className="border border-zinc-300 px-2 py-1"></td>
+                <td className="border border-zinc-300 px-2 py-1"></td>
                 <td className="border border-zinc-300 px-2 py-1"></td>
                 <td className="border border-zinc-300 px-2 py-1 text-right">
-                  {venda.itens.length}
+                  SUBTOTAL
                 </td>
-                <td className="border border-zinc-300 px-2 py-1 text-right">
-                  {formatBRL(totalDescontos)}
+                <td className="border border-zinc-300 px-2 py-1 text-center">
+                  {venda.itens.length}
                 </td>
                 <td className="border border-zinc-300 px-2 py-1 text-right">
                   {formatBRL(venda.subtotal)}
                 </td>
               </tr>
-              {/* Linha SUBTOTAL — fundo branco */}
-              <tr className="bg-white font-bold print-row-even">
+              {/* Linha TOTAL GERAL — fundo laranja, dentro da tabela */}
+              <tr className="print-header-bg bg-[#F97316] font-bold text-white">
                 <td
                   colSpan={5}
-                  className="border border-zinc-300 px-2 py-1 text-right"
+                  className="border border-zinc-300 px-2 py-1.5 text-right text-sm"
                 >
-                  SUBTOTAL
+                  TOTAL GERAL
                 </td>
-                <td className="border border-zinc-300 px-2 py-1 text-right">
-                  {formatBRL(venda.subtotal)}
+                <td className="border border-zinc-300 px-2 py-1.5 text-right text-base">
+                  {formatBRL(venda.total)}
                 </td>
               </tr>
             </tfoot>
           </table>
-
-          {/* TOTAL GERAL — banner laranja fora da tabela, alinhado à direita */}
-          <div className="mt-2 flex justify-end">
-            <div className="print-header-bg flex items-center gap-4 bg-[#F97316] px-4 py-2 text-white">
-              <span className="text-sm font-bold uppercase">Total Geral</span>
-              <span className="text-lg font-bold">
-                {formatBRL(venda.total)}
-              </span>
-            </div>
-          </div>
         </div>
 
         {/* Financeiro */}
