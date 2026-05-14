@@ -38,6 +38,7 @@ export interface EstadoPDV {
   forma_pagamento?: string;
   parcelas: number;
   desconto_geral: number;
+  tipo_desconto: 'valor' | 'porcentagem';
   observacao?: string;
   tipo_operacao: 'venda' | 'orcamento';
 }

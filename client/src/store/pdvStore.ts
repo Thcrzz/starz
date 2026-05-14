@@ -17,6 +17,7 @@ interface PDVStore extends EstadoPDV {
   setRetiradoPor: (nome: string) => void;
   setObservacao: (obs: string) => void;
   setTipoOperacao: (tipo: 'venda' | 'orcamento') => void;
+  setTipoDesconto: (tipo: 'valor' | 'porcentagem') => void;
   subtotal: () => number;
   totalComDesconto: () => number;
 }
@@ -31,6 +32,7 @@ const estadoInicial: EstadoPDV = {
   forma_pagamento: undefined,
   parcelas: 1,
   desconto_geral: 0,
+  tipo_desconto: 'valor',
   observacao: undefined,
   tipo_operacao: 'venda',
 };
@@ -118,10 +120,19 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
 
   setTipoOperacao: (tipo) => set({ tipo_operacao: tipo }),
 
+  setTipoDesconto: (tipo) =>
+    // troca o tipo e zera o valor — evita interpretação ambígua do número anterior
+    set({ tipo_desconto: tipo, desconto_geral: 0 }),
+
   subtotal: () => get().itens.reduce((acc, i) => acc + i.total_item, 0),
 
   totalComDesconto: () => {
-    const sub = get().itens.reduce((acc, i) => acc + i.total_item, 0);
-    return Math.max(0, sub - get().desconto_geral);
+    const state = get();
+    const sub = state.itens.reduce((acc, i) => acc + i.total_item, 0);
+    if (state.tipo_desconto === 'porcentagem') {
+      const pct = Math.min(100, Math.max(0, state.desconto_geral));
+      return Math.max(0, sub * (1 - pct / 100));
+    }
+    return Math.max(0, sub - state.desconto_geral);
   },
 }));

@@ -28,6 +28,8 @@ export default function Carrinho() {
   const totalComDesconto = usePDVStore((s) => s.totalComDesconto());
   const descontoGeral = usePDVStore((s) => s.desconto_geral);
   const setDescontoGeral = usePDVStore((s) => s.setDescontoGeral);
+  const tipoDesconto = usePDVStore((s) => s.tipo_desconto);
+  const setTipoDesconto = usePDVStore((s) => s.setTipoDesconto);
   const atualizarQuantidade = usePDVStore((s) => s.atualizarQuantidade);
   const atualizarPreco = usePDVStore((s) => s.atualizarPreco);
   const atualizarDesconto = usePDVStore((s) => s.atualizarDesconto);
@@ -189,18 +191,56 @@ export default function Carrinho() {
         </div>
         <div className="mt-2 flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Desconto geral</span>
-          <div className="relative">
-            <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-              R$
-            </span>
-            <Input
-              type="number"
-              min={0}
-              step={0.01}
-              value={descontoGeral}
-              onChange={(e) => setDescontoGeral(parseNumero(e.target.value))}
-              className="h-8 w-32 pl-8 text-right"
-            />
+          <div className="flex items-center gap-2">
+            <div className="flex overflow-hidden rounded-md border border-border">
+              <button
+                type="button"
+                onClick={() => setTipoDesconto('valor')}
+                className={
+                  tipoDesconto === 'valor'
+                    ? 'bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground'
+                    : 'bg-secondary px-2 py-1 text-xs text-muted-foreground hover:text-foreground'
+                }
+              >
+                R$
+              </button>
+              <button
+                type="button"
+                onClick={() => setTipoDesconto('porcentagem')}
+                className={
+                  tipoDesconto === 'porcentagem'
+                    ? 'bg-primary px-2 py-1 text-xs font-semibold text-primary-foreground'
+                    : 'bg-secondary px-2 py-1 text-xs text-muted-foreground hover:text-foreground'
+                }
+              >
+                %
+              </button>
+            </div>
+            <div className="relative">
+              {tipoDesconto === 'valor' ? (
+                <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                  R$
+                </span>
+              ) : (
+                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                  %
+                </span>
+              )}
+              <Input
+                type="number"
+                min={0}
+                step={tipoDesconto === 'porcentagem' ? 1 : 0.01}
+                max={tipoDesconto === 'porcentagem' ? 100 : undefined}
+                value={descontoGeral}
+                onChange={(e) => setDescontoGeral(parseNumero(e.target.value))}
+                placeholder={tipoDesconto === 'porcentagem' ? '0' : '0,00'}
+                className={
+                  tipoDesconto === 'valor'
+                    ? 'h-8 w-32 px-2 pl-8 text-right'
+                    : 'h-8 w-32 px-2 pr-8 text-right'
+                }
+              />
+            </div>
           </div>
         </div>
         <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
