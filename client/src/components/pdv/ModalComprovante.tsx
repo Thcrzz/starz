@@ -111,16 +111,7 @@ export default function ModalComprovante({
       labelsFormaPagamento[venda.forma_pagamento ?? ''] ??
       venda.forma_pagamento ??
       '-';
-    if (venda.forma_pagamento === 'credito' && venda.parcelas > 1) {
-      const valorParcela = venda.total / venda.parcelas;
-      return Array.from({ length: venda.parcelas }, (_, i) => ({
-        n: i + 1,
-        valor: valorParcela,
-        dataPgto,
-        forma: formaLbl,
-        situacao: venda.situacao === 'pago' ? 'Pago' : 'A pagar',
-      }));
-    }
+    // Sempre 1 linha — não detalha parcelas no comprovante.
     return [
       {
         n: 1,
