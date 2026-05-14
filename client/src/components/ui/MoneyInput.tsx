@@ -6,7 +6,10 @@ interface MoneyInputProps {
   value: number;
   onChange: (value: number) => void;
   placeholder?: string;
+  /** classes aplicadas no <input>; permite override de altura/largura */
   className?: string;
+  /** classes aplicadas no wrapper relativo (raro precisar) */
+  wrapperClassName?: string;
   prefix?: boolean;
   disabled?: boolean;
   id?: string;
@@ -24,6 +27,7 @@ export default function MoneyInput({
   onChange,
   placeholder,
   className,
+  wrapperClassName,
   prefix = true,
   disabled,
   id,
@@ -52,7 +56,7 @@ export default function MoneyInput({
   }, [internalValue, onChange]);
 
   return (
-    <div className={cn('relative', className)}>
+    <div className={cn('relative', wrapperClassName)}>
       {prefix && (
         <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
           R$
@@ -72,6 +76,7 @@ export default function MoneyInput({
           'flex h-10 w-full rounded-md border border-input bg-background text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50',
           'px-3 py-2 text-right',
           prefix && 'pl-8',
+          className,
         )}
       />
     </div>

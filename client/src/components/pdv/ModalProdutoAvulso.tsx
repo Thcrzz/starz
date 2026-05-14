@@ -10,6 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import MoneyInput from '@/components/ui/MoneyInput';
 import {
   Select,
   SelectContent,
@@ -36,32 +37,36 @@ export default function ModalProdutoAvulso({
   const adicionarItem = usePDVStore((s) => s.adicionarItem);
 
   const [nome, setNome] = useState('');
-  const [preco, setPreco] = useState('');
+  const [preco, setPreco] = useState<number>(0);
   const [quantidade, setQuantidade] = useState('1');
   const [unidade, setUnidade] = useState('un');
   const [salvando, setSalvando] = useState(false);
 
   useEffect(() => {
-    if (aberto) setNome(nomeInicial ?? '');
+    if (aberto) {
+      setNome(nomeInicial ?? '');
+      setPreco(0);
+      setQuantidade('1');
+      setUnidade('un');
+    }
   }, [aberto, nomeInicial]);
 
   function resetar() {
     setNome('');
-    setPreco('');
+    setPreco(0);
     setQuantidade('1');
     setUnidade('un');
   }
 
   async function handleAdicionar() {
     const nomeTrim = nome.trim();
-    const precoNum = Number(preco.replace(',', '.'));
     const qtdNum = Number(quantidade.replace(',', '.'));
 
     if (!nomeTrim) {
       toast.error('Informe o nome do produto');
       return;
     }
-    if (!Number.isFinite(precoNum) || precoNum <= 0) {
+    if (!Number.isFinite(preco) || preco <= 0) {
       toast.error('Informe um preço válido');
       return;
     }
@@ -78,7 +83,7 @@ export default function ModalProdutoAvulso({
     try {
       const criado = await criarProdutoAvulso({
         nome: nomeTrim,
-        preco: precoNum,
+        preco,
         unidade,
       });
 
@@ -86,11 +91,11 @@ export default function ModalProdutoAvulso({
         id: crypto.randomUUID(),
         variacao_id: criado.id,
         descricao: nomeTrim,
-        preco_unitario: precoNum,
-        preco_original: precoNum,
+        preco_unitario: preco,
+        preco_original: preco,
         quantidade: qtdNum,
         desconto_item: 0,
-        total_item: precoNum * qtdNum,
+        total_item: preco * qtdNum,
         e_avulso: true,
         unidade,
       });
@@ -134,13 +139,11 @@ export default function ModalProdutoAvulso({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="grid gap-2">
-              <Label htmlFor="avulso-preco">Preço unitário (R$)</Label>
-              <Input
+              <Label htmlFor="avulso-preco">Preço unitário</Label>
+              <MoneyInput
                 id="avulso-preco"
-                inputMode="decimal"
                 value={preco}
-                onChange={(e) => setPreco(e.target.value)}
-                placeholder="0,00"
+                onChange={setPreco}
               />
             </div>
             <div className="grid gap-2">

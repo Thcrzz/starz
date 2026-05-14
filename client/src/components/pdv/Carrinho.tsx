@@ -1,15 +1,10 @@
 import { AlertTriangle, ShoppingCart, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import MoneyInput from '@/components/ui/MoneyInput';
+import { formatMoney } from '@/hooks/useMoneyInput';
 import { usePDVStore } from '@/store/pdvStore';
 import BuscaProduto from './BuscaProduto';
-
-function formatBRL(v: number): string {
-  return v.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  });
-}
 
 function parseNumero(s: string): number {
   const n = Number(s.replace(',', '.'));
@@ -107,7 +102,7 @@ export default function Carrinho() {
                     </div>
                   </div>
 
-                  {/* Quantidade */}
+                  {/* Quantidade — input numérico normal (suporta decimais para m/kg) */}
                   <Input
                     type="number"
                     min={0.001}
@@ -119,20 +114,13 @@ export default function Carrinho() {
                     className="h-8 w-full px-2 text-center"
                   />
 
-                  {/* Preço unitário */}
+                  {/* Preço unitário — com máscara monetária */}
                   <div className="relative">
-                    <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                      R$
-                    </span>
-                    <Input
-                      type="number"
-                      min={0}
-                      step={0.01}
+                    <MoneyInput
                       value={item.preco_unitario}
-                      onChange={(e) =>
-                        atualizarPreco(item.id, parseNumero(e.target.value))
-                      }
-                      className="h-8 w-full px-2 pl-8 text-right"
+                      onChange={(v) => atualizarPreco(item.id, v)}
+                      className="h-8"
+                      ariaLabel="Preço unitário"
                     />
                     {precoAlterado && (
                       <AlertTriangle
@@ -142,29 +130,17 @@ export default function Carrinho() {
                     )}
                   </div>
 
-                  {/* Desconto */}
-                  <div className="relative">
-                    <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                      R$
-                    </span>
-                    <Input
-                      type="number"
-                      min={0}
-                      step={0.01}
-                      value={item.desconto_item}
-                      onChange={(e) =>
-                        atualizarDesconto(
-                          item.id,
-                          parseNumero(e.target.value),
-                        )
-                      }
-                      className="h-8 w-full px-2 pl-8 text-right"
-                    />
-                  </div>
+                  {/* Desconto por item — com máscara monetária */}
+                  <MoneyInput
+                    value={item.desconto_item}
+                    onChange={(v) => atualizarDesconto(item.id, v)}
+                    className="h-8"
+                    ariaLabel="Desconto do item"
+                  />
 
                   {/* Total */}
                   <div className="text-center font-semibold text-white">
-                    {formatBRL(item.total_item)}
+                    R$ {formatMoney(item.total_item)}
                   </div>
 
                   {/* Ações */}
@@ -187,7 +163,7 @@ export default function Carrinho() {
       <div className="border-t border-border bg-card/60 px-4 py-3">
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Subtotal</span>
-          <span className="font-medium">{formatBRL(subtotal)}</span>
+          <span className="font-medium">R$ {formatMoney(subtotal)}</span>
         </div>
         <div className="mt-2 flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Desconto geral</span>
@@ -216,31 +192,32 @@ export default function Carrinho() {
                 %
               </button>
             </div>
-            <div className="relative">
-              {tipoDesconto === 'valor' ? (
-                <span className="pointer-events-none absolute left-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                  R$
-                </span>
-              ) : (
+            {tipoDesconto === 'valor' ? (
+              <MoneyInput
+                value={descontoGeral}
+                onChange={setDescontoGeral}
+                className="h-8 w-32"
+                ariaLabel="Desconto geral em reais"
+              />
+            ) : (
+              <div className="relative">
                 <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
                   %
                 </span>
-              )}
-              <Input
-                type="number"
-                min={0}
-                step={tipoDesconto === 'porcentagem' ? 1 : 0.01}
-                max={tipoDesconto === 'porcentagem' ? 100 : undefined}
-                value={descontoGeral}
-                onChange={(e) => setDescontoGeral(parseNumero(e.target.value))}
-                placeholder={tipoDesconto === 'porcentagem' ? '0' : '0,00'}
-                className={
-                  tipoDesconto === 'valor'
-                    ? 'h-8 w-32 px-2 pl-8 text-right'
-                    : 'h-8 w-32 px-2 pr-8 text-right'
-                }
-              />
-            </div>
+                <Input
+                  type="number"
+                  min={0}
+                  step={1}
+                  max={100}
+                  value={descontoGeral}
+                  onChange={(e) =>
+                    setDescontoGeral(parseNumero(e.target.value))
+                  }
+                  placeholder="0"
+                  className="h-8 w-32 px-2 pr-8 text-right"
+                />
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-3 flex items-center justify-between border-t border-border pt-3">
@@ -248,7 +225,7 @@ export default function Carrinho() {
             Total
           </span>
           <span className="text-2xl font-bold text-primary">
-            {formatBRL(totalComDesconto)}
+            R$ {formatMoney(totalComDesconto)}
           </span>
         </div>
       </div>
