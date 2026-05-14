@@ -12,6 +12,8 @@ dotenv.config();
 import './db/database';
 import authRouter from './routes/auth';
 import produtosRouter from './routes/produtos';
+import usuariosRouter from './routes/usuarios';
+import clientesRouter from './routes/clientes';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -29,6 +31,12 @@ app.use('/api/auth', authRouter);
 
 // Rotas de produtos (busca para PDV, produto avulso, etc)
 app.use('/api/produtos', produtosRouter);
+
+// Rotas de usuários (listagem para seleção de vendedor, etc)
+app.use('/api/usuarios', usuariosRouter);
+
+// Rotas de clientes (busca, detalhe)
+app.use('/api/clientes', clientesRouter);
 
 // Em produção, serve o build do front (../client/dist)
 if (process.env.NODE_ENV === 'production') {
