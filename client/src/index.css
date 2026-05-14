@@ -60,3 +60,24 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+  .comprovante-print,
+  .comprovante-print * {
+    visibility: visible;
+  }
+  .comprovante-print {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: white;
+    color: black;
+  }
+  .comprovante-print .no-print {
+    display: none !important;
+  }
+}
