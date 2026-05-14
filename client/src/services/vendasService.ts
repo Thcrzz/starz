@@ -17,7 +17,7 @@ export interface NovaVendaPayload {
   retirado_por?: string;
   vendedor_id?: number;
   situacao: 'pago' | 'a_pagar';
-  forma_pagamento: string;
+  forma_pagamento?: string | null;
   parcelas: number;
   desconto: number;
   observacao?: string;

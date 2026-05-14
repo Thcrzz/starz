@@ -30,7 +30,7 @@ interface VendaBody {
   retirado_por?: string;
   vendedor_id?: number;
   situacao: Situacao;
-  forma_pagamento: FormaPagamento;
+  forma_pagamento?: FormaPagamento | null;
   parcelas?: number;
   desconto?: number;
   observacao?: string;
@@ -96,7 +96,12 @@ router.post('/', autenticar, (req: Request, res: Response) => {
   if (!body || !Array.isArray(body.itens) || body.itens.length === 0) {
     return res.status(400).json({ erro: 'A venda precisa de ao menos um item' });
   }
-  if (!body.forma_pagamento) {
+
+  const tipoOperacao: 'venda' | 'orcamento' =
+    body.tipo_operacao === 'orcamento' ? 'orcamento' : 'venda';
+
+  // Apenas vendas exigem forma de pagamento — orçamento é só uma cotação
+  if (tipoOperacao === 'venda' && !body.forma_pagamento) {
     return res.status(400).json({ erro: 'Forma de pagamento é obrigatória' });
   }
   if (
@@ -106,12 +111,20 @@ router.post('/', autenticar, (req: Request, res: Response) => {
   ) {
     return res.status(400).json({ erro: 'Situação inválida' });
   }
-  if (body.forma_pagamento === 'fiado' && !body.cliente_id) {
+  if (
+    tipoOperacao === 'venda' &&
+    body.forma_pagamento === 'fiado' &&
+    !body.cliente_id
+  ) {
     return res
       .status(400)
       .json({ erro: 'Venda a prazo requer identificação do cliente' });
   }
-  if (body.situacao === 'a_pagar' && !body.cliente_id) {
+  if (
+    tipoOperacao === 'venda' &&
+    body.situacao === 'a_pagar' &&
+    !body.cliente_id
+  ) {
     return res
       .status(400)
       .json({ erro: 'Venda com status "a pagar" requer cliente' });
@@ -119,8 +132,6 @@ router.post('/', autenticar, (req: Request, res: Response) => {
 
   const parcelas = Math.max(1, Number(body.parcelas) || 1);
   const desconto = Math.max(0, Number(body.desconto) || 0);
-  const tipoOperacao: 'venda' | 'orcamento' =
-    body.tipo_operacao === 'orcamento' ? 'orcamento' : 'venda';
 
   const subtotal = body.itens.reduce(
     (acc, it) => acc + (Number(it.total_item) || 0),
@@ -155,7 +166,7 @@ router.post('/', autenticar, (req: Request, res: Response) => {
           body.retirado_por ?? null,
           body.vendedor_id ?? null,
           body.situacao,
-          body.forma_pagamento,
+          body.forma_pagamento ?? null,
           parcelas,
           subtotal,
           desconto,

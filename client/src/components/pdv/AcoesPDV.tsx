@@ -69,11 +69,12 @@ export default function AcoesPDV() {
   async function finalizar(acao: Acao) {
     if (carrinhoVazio) return;
 
-    if (!formaPagamento) {
+    // Orçamento não exige forma de pagamento
+    if (!ehOrcamento && !formaPagamento) {
       toast.error('Selecione a forma de pagamento');
       return;
     }
-    if (formaPagamento === 'fiado' && !clienteId) {
+    if (!ehOrcamento && formaPagamento === 'fiado' && !clienteId) {
       toast.error('Venda a prazo requer identificação do cliente');
       return;
     }
@@ -82,8 +83,9 @@ export default function AcoesPDV() {
       cliente_id: clienteId,
       retirado_por: retiradoPor,
       vendedor_id: vendedorId,
-      situacao: formaPagamento === 'fiado' ? 'a_pagar' : 'pago',
-      forma_pagamento: formaPagamento,
+      situacao:
+        !ehOrcamento && formaPagamento === 'fiado' ? 'a_pagar' : 'pago',
+      forma_pagamento: formaPagamento ?? null,
       parcelas,
       desconto: descontoGeral,
       observacao,
