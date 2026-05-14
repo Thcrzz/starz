@@ -126,21 +126,48 @@ export default function ModalComprovante({
 
   const linhasFinanceiro = (() => {
     if (!venda) return [];
+    const situacaoLbl = venda.situacao === 'pago' ? 'Pago' : 'A pagar';
+
+    // Múltiplas formas de pagamento — uma linha por pagamento (sem detalhar parcelas)
+    const pagamentos = venda.pagamentos ?? [];
+    if (pagamentos.length > 0) {
+      return pagamentos.map((p, idx) => {
+        const formaLbl =
+          labelsFormaPagamento[p.forma] ?? p.forma;
+        const sufixoParcelas =
+          p.forma === 'credito' && p.parcelas > 1
+            ? ` (${p.parcelas}x)`
+            : '';
+        return {
+          n: idx + 1,
+          valor: p.valor,
+          dataPgto,
+          forma: formaLbl + sufixoParcelas,
+          situacao: situacaoLbl,
+        };
+      });
+    }
+
+    // Compat: vendas antigas que ainda não têm pagamentos[] — usa forma_pagamento
     const formaLbl =
       labelsFormaPagamento[venda.forma_pagamento ?? ''] ??
       venda.forma_pagamento ??
       '-';
-    // Sempre 1 linha — não detalha parcelas no comprovante.
     return [
       {
         n: 1,
         valor: venda.total,
         dataPgto,
         forma: formaLbl,
-        situacao: venda.situacao === 'pago' ? 'Pago' : 'A pagar',
+        situacao: situacaoLbl,
       },
     ];
   })();
+
+  const totalPagamentos = linhasFinanceiro.reduce(
+    (acc, l) => acc + (l.valor || 0),
+    0,
+  );
 
   /**
    * Renderiza o conteúdo do comprovante. Usado em dois lugares:
@@ -485,6 +512,32 @@ export default function ModalComprovante({
                 );
               })}
             </tbody>
+            {linhasFinanceiro.length > 1 && (
+              <tfoot>
+                <tr
+                  className="row-subtotal font-bold"
+                  style={{ backgroundColor: '#f5f5f5' }}
+                >
+                  <td
+                    className="px-2 py-1 text-right"
+                    style={{ backgroundColor: '#f5f5f5' }}
+                  >
+                    Total
+                  </td>
+                  <td
+                    className="px-2 py-1 text-right"
+                    style={{ backgroundColor: '#f5f5f5' }}
+                  >
+                    {formatMoney(totalPagamentos)}
+                  </td>
+                  <td
+                    colSpan={3}
+                    className="px-2 py-1"
+                    style={{ backgroundColor: '#f5f5f5' }}
+                  ></td>
+                </tr>
+              </tfoot>
+            )}
           </table>
         </div>
         )}
