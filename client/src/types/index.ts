@@ -108,6 +108,7 @@ export interface Venda {
   nfce_status: StatusNFCe | null;
   nfe_id: number | null;
   observacao: string | null;
+  tipo_operacao: 'venda' | 'orcamento';
   criado_em: string;
   itens?: ItemVenda[];
 }

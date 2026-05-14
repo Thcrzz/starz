@@ -89,7 +89,10 @@ export default function ModalComprovante({
   const vendedor = dados?.vendedor;
   const empresa = dados?.empresa;
 
-  const ehOrcamento = tipoOperacao === 'orcamento';
+  // Fonte da verdade: o campo do backend; cai pra prop enquanto não carregou.
+  const ehOrcamento =
+    venda?.tipo_operacao === 'orcamento' ||
+    (venda?.tipo_operacao === undefined && tipoOperacao === 'orcamento');
   const tituloModal = ehOrcamento ? 'Comprovante de Orçamento' : 'Comprovante de Venda';
   const tituloSecaoDados = ehOrcamento ? 'DADOS DO ORÇAMENTO' : 'DADOS DA VENDA';
   const tituloSecaoItens = ehOrcamento ? 'ITENS DO ORÇAMENTO' : 'ITENS DA VENDA';
@@ -374,7 +377,8 @@ export default function ModalComprovante({
           </table>
         </div>
 
-        {/* Financeiro */}
+        {/* Financeiro — não aparece em orçamento */}
+        {!ehOrcamento && (
         <div className="mb-4">
           <div className="mb-2 text-sm font-bold text-gray-900">FINANCEIRO</div>
           <table className="w-full border-collapse text-xs">
@@ -462,6 +466,7 @@ export default function ModalComprovante({
             </tbody>
           </table>
         </div>
+        )}
 
         {/* Rodapé — assinatura */}
         <div className="mt-6 border-t border-zinc-300 pt-3 text-xs">
