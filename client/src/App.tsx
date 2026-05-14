@@ -6,6 +6,7 @@ import ProtectedRoute from '@/components/shared/ProtectedRoute';
 import Layout from '@/components/layout/Layout';
 import Login from '@/pages/auth/Login';
 import Placeholder from '@/pages/Placeholder';
+import PDVPage from '@/pages/pdv/PDVPage';
 
 const queryClient = new QueryClient();
 
@@ -28,7 +29,7 @@ export default function App() {
               <Route path="/" element={<Navigate to="/pdv" replace />} />
 
               {/* Operacional — admin + user */}
-              <Route path="/pdv" element={<Placeholder titulo="PDV" />} />
+              <Route path="/pdv" element={<PDVPage />} />
               <Route path="/produtos" element={<Placeholder titulo="Produtos" />} />
               <Route path="/clientes" element={<Placeholder titulo="Clientes" />} />
               <Route path="/vendas" element={<Placeholder titulo="Vendas" />} />
