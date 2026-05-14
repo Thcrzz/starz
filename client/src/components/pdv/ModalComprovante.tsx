@@ -280,24 +280,46 @@ export default function ModalComprovante({
                 );
               })}
             </tbody>
+            <tfoot>
+              {/* Linha TOTAL — fundo cinza, com somatórios */}
+              <tr className="bg-[#f5f5f5] font-bold print-row-odd">
+                <td
+                  colSpan={2}
+                  className="border border-zinc-300 px-2 py-1 text-right"
+                >
+                  TOTAL
+                </td>
+                <td className="border border-zinc-300 px-2 py-1"></td>
+                <td className="border border-zinc-300 px-2 py-1 text-right">
+                  {venda.itens.length}
+                </td>
+                <td className="border border-zinc-300 px-2 py-1 text-right">
+                  {formatBRL(totalDescontos)}
+                </td>
+                <td className="border border-zinc-300 px-2 py-1 text-right">
+                  {formatBRL(venda.subtotal)}
+                </td>
+              </tr>
+              {/* Linha SUBTOTAL — fundo branco */}
+              <tr className="bg-white font-bold print-row-even">
+                <td
+                  colSpan={5}
+                  className="border border-zinc-300 px-2 py-1 text-right"
+                >
+                  SUBTOTAL
+                </td>
+                <td className="border border-zinc-300 px-2 py-1 text-right">
+                  {formatBRL(venda.subtotal)}
+                </td>
+              </tr>
+            </tfoot>
           </table>
 
-          <div className="mt-2 grid grid-cols-4 gap-2 text-xs">
-            <div>
-              <span className="font-semibold">Total de itens:</span>{' '}
-              {venda.itens.length}
-            </div>
-            <div>
-              <span className="font-semibold">Desconto:</span>{' '}
-              {formatBRL(totalDescontos)}
-            </div>
-            <div>
-              <span className="font-semibold">Subtotal:</span>{' '}
-              {formatBRL(venda.subtotal)}
-            </div>
-            <div className="text-right">
-              <span className="font-semibold">TOTAL GERAL:</span>{' '}
-              <span className="print-orange text-base font-bold text-[#F97316]">
+          {/* TOTAL GERAL — banner laranja fora da tabela, alinhado à direita */}
+          <div className="mt-2 flex justify-end">
+            <div className="print-header-bg flex items-center gap-4 bg-[#F97316] px-4 py-2 text-white">
+              <span className="text-sm font-bold uppercase">Total Geral</span>
+              <span className="text-lg font-bold">
                 {formatBRL(venda.total)}
               </span>
             </div>
