@@ -20,6 +20,12 @@ interface Props {
   vendaId: number | null;
   onFechar: () => void;
   tipoOperacao?: 'venda' | 'orcamento';
+  /**
+   * Se true, NÃO abre o Dialog mas renderiza o body-portal escondido em tela
+   * e dispara window.print() automaticamente assim que os dados carregam.
+   * Usado para "Finalizar Venda e Imprimir Pedido".
+   */
+  imprimirAutomaticamente?: boolean;
 }
 
 
@@ -51,34 +57,49 @@ export default function ModalComprovante({
   vendaId,
   onFechar,
   tipoOperacao = 'venda',
+  imprimirAutomaticamente = false,
 }: Props) {
   const [dados, setDados] = useState<DadosComprovante | null>(null);
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
 
+  const ativo = aberto || imprimirAutomaticamente;
+
   useEffect(() => {
-    if (!aberto || !vendaId) {
+    if (!ativo || !vendaId) {
       setDados(null);
       setErro(null);
       return;
     }
-    let ativo = true;
+    let vivo = true;
     setCarregando(true);
     setErro(null);
     buscarDadosComprovante(vendaId)
       .then((d) => {
-        if (ativo) setDados(d);
+        if (vivo) setDados(d);
       })
       .catch(() => {
-        if (ativo) setErro('Falha ao carregar comprovante');
+        if (vivo) setErro('Falha ao carregar comprovante');
       })
       .finally(() => {
-        if (ativo) setCarregando(false);
+        if (vivo) setCarregando(false);
       });
     return () => {
-      ativo = false;
+      vivo = false;
     };
-  }, [aberto, vendaId]);
+  }, [ativo, vendaId]);
+
+  // Auto-print: quando o componente é montado no modo "imprimirAutomaticamente"
+  // e os dados acabaram de chegar, dispara window.print() depois de pintar o DOM.
+  useEffect(() => {
+    if (!imprimirAutomaticamente || !dados) return;
+    const t = window.setTimeout(() => {
+      window.print();
+      // Avisa o pai pra desmontar este componente
+      onFechar();
+    }, 300);
+    return () => window.clearTimeout(t);
+  }, [imprimirAutomaticamente, dados, onFechar]);
 
   function handleImprimir() {
     window.print();
@@ -542,7 +563,7 @@ export default function ModalComprovante({
        * @media print esconde `body > *` — então o conteúdo dentro do Dialog não
        * aparece na impressão.
        */}
-      {aberto &&
+      {ativo &&
         dados &&
         typeof document !== 'undefined' &&
         createPortal(
