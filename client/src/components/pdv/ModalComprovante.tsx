@@ -282,17 +282,15 @@ export default function ModalComprovante({
               })}
             </tbody>
             <tfoot>
-              {/* Linha SUBTOTAL — fundo cinza, dentro da tabela */}
+              {/* Linha SUBTOTAL — "SUBTOTAL" sob Preço Unit., qtd sob Quant. */}
               <tr className="bg-[#f5f5f5] font-bold print-row-odd">
                 <td className="px-2 py-1"></td>
                 <td className="px-2 py-1"></td>
-                <td className="px-2 py-1"></td>
-                <td className="px-2 py-1 text-right">
-                  SUBTOTAL
-                </td>
+                <td className="px-2 py-1 text-right">SUBTOTAL</td>
                 <td className="px-2 py-1 text-center">
                   {venda.itens.length}
                 </td>
+                <td className="px-2 py-1"></td>
                 <td className="px-2 py-1 text-right">
                   {formatBRL(venda.subtotal)}
                 </td>
