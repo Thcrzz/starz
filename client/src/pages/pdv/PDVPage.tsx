@@ -3,6 +3,7 @@ import SeletorVendedor from '@/components/pdv/SeletorVendedor';
 import SeletorCliente from '@/components/pdv/SeletorCliente';
 import ParteFinanceira from '@/components/pdv/ParteFinanceira';
 import AcoesPDV from '@/components/pdv/AcoesPDV';
+import SeletorTipoOperacao from '@/components/pdv/SeletorTipoOperacao';
 
 /**
  * Página de PDV — layout base com duas colunas.
@@ -33,6 +34,8 @@ export default function PDVPage() {
 
       {/* Coluna direita */}
       <aside className="flex w-[380px] flex-shrink-0 flex-col gap-4 overflow-y-auto">
+        <SeletorTipoOperacao />
+
         <SeletorVendedor />
 
         <SeletorCliente />

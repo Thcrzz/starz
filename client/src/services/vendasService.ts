@@ -21,6 +21,7 @@ export interface NovaVendaPayload {
   parcelas: number;
   desconto: number;
   observacao?: string;
+  tipo_operacao?: 'venda' | 'orcamento';
   itens: NovoItemVenda[];
 }
 

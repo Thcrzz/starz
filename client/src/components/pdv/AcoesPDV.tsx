@@ -31,6 +31,7 @@ export default function AcoesPDV() {
   const parcelas = usePDVStore((s) => s.parcelas);
   const descontoGeral = usePDVStore((s) => s.desconto_geral);
   const observacao = usePDVStore((s) => s.observacao);
+  const tipoOperacao = usePDVStore((s) => s.tipo_operacao);
   const limparCarrinho = usePDVStore((s) => s.limparCarrinho);
 
   const [confirmandoCancelar, setConfirmandoCancelar] = useState(false);
@@ -40,11 +41,30 @@ export default function AcoesPDV() {
     null,
   );
   const [clienteNomeRecibo, setClienteNomeRecibo] = useState<string>('');
+  const [tipoOpRecibo, setTipoOpRecibo] = useState<'venda' | 'orcamento'>(
+    'venda',
+  );
   const [modalConcluida, setModalConcluida] = useState(false);
   const [modalComprovante, setModalComprovante] = useState(false);
 
   const carrinhoVazio = itens.length === 0;
   const carregando = acaoEmAndamento !== null;
+  const ehOrcamento = tipoOperacao === 'orcamento';
+
+  const lblFinalizar = ehOrcamento ? 'Finalizar Orçamento' : 'Finalizar Venda';
+  const lblImprimir = ehOrcamento
+    ? 'Finalizar Orçamento e Imprimir'
+    : 'Finalizar Venda e Imprimir Pedido';
+  const lblCancelar = ehOrcamento ? 'Cancelar Orçamento' : 'Cancelar Venda';
+  const tituloConfirmar = ehOrcamento
+    ? 'Cancelar orçamento?'
+    : 'Cancelar venda?';
+  const textoConfirmar = ehOrcamento
+    ? 'Deseja cancelar o orçamento? Todos os itens do carrinho serão removidos.'
+    : 'Deseja cancelar a venda? Todos os itens do carrinho serão removidos.';
+  const sucessoCancelar = ehOrcamento
+    ? 'Orçamento cancelado'
+    : 'Venda cancelada';
 
   async function finalizar(acao: Acao) {
     if (carrinhoVazio) return;
@@ -67,6 +87,7 @@ export default function AcoesPDV() {
       parcelas,
       desconto: descontoGeral,
       observacao,
+      tipo_operacao: tipoOperacao,
       itens: itens.map((i) => ({
         variacao_id: i.variacao_id,
         descricao_snapshot: i.descricao,
@@ -82,11 +103,16 @@ export default function AcoesPDV() {
     setAcaoEmAndamento(acao);
     try {
       const venda = await criarVenda(payload);
-      toast.success(`Venda #${venda.numero} registrada com sucesso!`);
+      toast.success(
+        ehOrcamento
+          ? `Orçamento #${venda.numero} registrado com sucesso!`
+          : `Venda #${venda.numero} registrada com sucesso!`,
+      );
 
-      // Captura nome do cliente ANTES de limpar o store
+      // Captura tipo e nome do cliente ANTES de limpar o store
       const nomeCli = clienteNome ?? '';
       setClienteNomeRecibo(nomeCli);
+      setTipoOpRecibo(tipoOperacao);
       setVendaConcluida(venda);
 
       limparCarrinho();
@@ -100,7 +126,11 @@ export default function AcoesPDV() {
         setModalConcluida(true);
       }
     } catch {
-      toast.error('Falha ao registrar a venda');
+      toast.error(
+        ehOrcamento
+          ? 'Falha ao registrar o orçamento'
+          : 'Falha ao registrar a venda',
+      );
     } finally {
       setAcaoEmAndamento(null);
     }
@@ -109,7 +139,7 @@ export default function AcoesPDV() {
   function confirmarCancelamento() {
     limparCarrinho();
     setConfirmandoCancelar(false);
-    toast.success('Venda cancelada');
+    toast.success(sucessoCancelar);
   }
 
   function abrirComprovante() {
@@ -132,7 +162,7 @@ export default function AcoesPDV() {
           {acaoEmAndamento === 'simples' && (
             <Loader2 className="mr-1 h-4 w-4 animate-spin" />
           )}
-          Finalizar Venda
+          {lblFinalizar}
         </Button>
         <Button
           disabled={carrinhoVazio || carregando}
@@ -143,26 +173,30 @@ export default function AcoesPDV() {
           {acaoEmAndamento === 'imprimir' && (
             <Loader2 className="mr-1 h-4 w-4 animate-spin" />
           )}
-          Finalizar Venda e Imprimir Pedido
+          {lblImprimir}
         </Button>
-        <Button
-          disabled={carrinhoVazio || carregando}
-          onClick={() => finalizar('nfce')}
-          className={`${baseClasses} ${desabilitadoClasses} hover:opacity-90`}
-          style={{ backgroundColor: '#d97706' }}
-        >
-          {acaoEmAndamento === 'nfce' && (
-            <Loader2 className="mr-1 h-4 w-4 animate-spin" />
-          )}
-          Finalizar Venda e Emitir NFC-e
-        </Button>
+
+        {!ehOrcamento && (
+          <Button
+            disabled={carrinhoVazio || carregando}
+            onClick={() => finalizar('nfce')}
+            className={`${baseClasses} ${desabilitadoClasses} hover:opacity-90`}
+            style={{ backgroundColor: '#d97706' }}
+          >
+            {acaoEmAndamento === 'nfce' && (
+              <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+            )}
+            Finalizar Venda e Emitir NFC-e
+          </Button>
+        )}
+
         <Button
           disabled={carregando}
           onClick={() => setConfirmandoCancelar(true)}
           className={`${baseClasses} ${desabilitadoClasses} hover:opacity-90`}
           style={{ backgroundColor: '#dc2626' }}
         >
-          Cancelar Venda
+          {lblCancelar}
         </Button>
       </section>
 
@@ -172,11 +206,8 @@ export default function AcoesPDV() {
       >
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Cancelar venda?</DialogTitle>
-            <DialogDescription>
-              Deseja cancelar a venda? Todos os itens do carrinho serão
-              removidos.
-            </DialogDescription>
+            <DialogTitle>{tituloConfirmar}</DialogTitle>
+            <DialogDescription>{textoConfirmar}</DialogDescription>
           </DialogHeader>
           <DialogFooter>
             <Button
@@ -200,6 +231,7 @@ export default function AcoesPDV() {
         aberto={modalConcluida}
         venda={vendaConcluida}
         clienteNome={clienteNomeRecibo || undefined}
+        tipoOperacao={tipoOpRecibo}
         onFechar={() => setModalConcluida(false)}
         onVerComprovante={abrirComprovante}
       />
@@ -207,6 +239,7 @@ export default function AcoesPDV() {
       <ModalComprovante
         aberto={modalComprovante}
         vendaId={vendaConcluida?.id ?? null}
+        tipoOperacao={tipoOpRecibo}
         onFechar={() => setModalComprovante(false)}
       />
     </>

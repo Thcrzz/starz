@@ -14,6 +14,7 @@ interface Props {
   aberto: boolean;
   venda: VendaCompleta | null;
   clienteNome?: string;
+  tipoOperacao?: 'venda' | 'orcamento';
   onFechar: () => void;
   onVerComprovante: () => void;
 }
@@ -39,9 +40,11 @@ export default function ModalVendaConcluida({
   aberto,
   venda,
   clienteNome,
+  tipoOperacao = 'venda',
   onFechar,
   onVerComprovante,
 }: Props) {
+  const ehOrcamento = tipoOperacao === 'orcamento';
   useEffect(() => {
     if (!aberto) return;
     const t = window.setTimeout(onFechar, 10_000);
@@ -58,7 +61,9 @@ export default function ModalVendaConcluida({
     <Dialog open={aberto} onOpenChange={(o) => !o && onFechar()}>
       <DialogContent className="max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center">Venda concluída</DialogTitle>
+          <DialogTitle className="text-center">
+            {ehOrcamento ? 'Orçamento concluído' : 'Venda concluída'}
+          </DialogTitle>
         </DialogHeader>
 
         <div className="flex flex-col items-center gap-3 py-4">
@@ -66,7 +71,9 @@ export default function ModalVendaConcluida({
             className="h-16 w-16 text-green-500"
             strokeWidth={1.5}
           />
-          <div className="text-3xl font-bold">Venda #{venda.numero}</div>
+          <div className="text-3xl font-bold">
+            {ehOrcamento ? 'Orçamento' : 'Venda'} #{venda.numero}
+          </div>
 
           <div className="mt-2 grid w-full gap-1 text-sm">
             <div className="flex items-center justify-between gap-2">
@@ -95,7 +102,7 @@ export default function ModalVendaConcluida({
 
         <DialogFooter className="sm:justify-between">
           <Button variant="outline" onClick={onFechar}>
-            Nova Venda
+            {ehOrcamento ? 'Novo Orçamento' : 'Nova Venda'}
           </Button>
           <Button onClick={onVerComprovante}>Ver Comprovante</Button>
         </DialogFooter>

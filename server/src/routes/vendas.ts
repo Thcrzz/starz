@@ -34,6 +34,7 @@ interface VendaBody {
   parcelas?: number;
   desconto?: number;
   observacao?: string;
+  tipo_operacao?: 'venda' | 'orcamento';
   itens: ItemBody[];
 }
 
@@ -53,6 +54,7 @@ interface VendaRow {
   nfce_status: string | null;
   nfe_id: number | null;
   observacao: string | null;
+  tipo_operacao: 'venda' | 'orcamento';
   criado_em: string;
 }
 
@@ -117,6 +119,8 @@ router.post('/', autenticar, (req: Request, res: Response) => {
 
   const parcelas = Math.max(1, Number(body.parcelas) || 1);
   const desconto = Math.max(0, Number(body.desconto) || 0);
+  const tipoOperacao: 'venda' | 'orcamento' =
+    body.tipo_operacao === 'orcamento' ? 'orcamento' : 'venda';
 
   const subtotal = body.itens.reduce(
     (acc, it) => acc + (Number(it.total_item) || 0),
@@ -141,8 +145,9 @@ router.post('/', autenticar, (req: Request, res: Response) => {
         .prepare(
           `INSERT INTO vendas
              (numero, cliente_id, retirado_por, vendedor_id, situacao,
-              forma_pagamento, parcelas, subtotal, desconto, total, observacao)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+              forma_pagamento, parcelas, subtotal, desconto, total, observacao,
+              tipo_operacao)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         )
         .run(
           numero,
@@ -156,6 +161,7 @@ router.post('/', autenticar, (req: Request, res: Response) => {
           desconto,
           total,
           body.observacao ?? null,
+          tipoOperacao,
         );
 
       const vendaId = Number(infoVenda.lastInsertRowid);
@@ -193,7 +199,8 @@ router.post('/', autenticar, (req: Request, res: Response) => {
           it.e_avulso ? 1 : 0,
         );
 
-        if (it.variacao_id) {
+        // Orçamento não baixa estoque — é apenas uma cotação.
+        if (it.variacao_id && tipoOperacao === 'venda') {
           const v = lerVariacao.get(it.variacao_id) as
             | { controla_estoque: number; estoque_atual: number }
             | undefined;
