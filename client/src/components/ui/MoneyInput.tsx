@@ -46,14 +46,20 @@ export default function MoneyInput({
     lastExternalRef.current = value;
   }, [value, internalValue, setValue]);
 
-  // Propaga mudanças internas para o pai
+  // Propaga mudanças internas para o pai. Mantém o onChange numa ref pra que
+  // o effect não dispare quando o pai passa uma arrow function inline
+  // (referência nova a cada render — causaria re-fires desnecessários).
+  const onChangeRef = useRef(onChange);
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
   const lastEmittedRef = useRef(internalValue);
   useEffect(() => {
     if (internalValue !== lastEmittedRef.current) {
       lastEmittedRef.current = internalValue;
-      onChange(internalValue);
+      onChangeRef.current(internalValue);
     }
-  }, [internalValue, onChange]);
+  }, [internalValue]);
 
   return (
     <div className={cn('relative', wrapperClassName)}>

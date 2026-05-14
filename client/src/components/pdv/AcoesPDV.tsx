@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
+  calcularDescontoAbsoluto,
+  distribuirDesconto,
+} from '@/utils/calculosVenda';
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -34,11 +38,9 @@ export default function AcoesPDV() {
   const observacao = usePDVStore((s) => s.observacao);
   const tipoOperacao = usePDVStore((s) => s.tipo_operacao);
   const pagamentos = usePDVStore((s) => s.pagamentos);
+  const tipoDesconto = usePDVStore((s) => s.tipo_desconto);
+  const descontoGeralBruto = usePDVStore((s) => s.desconto_geral);
   const limparCarrinho = usePDVStore((s) => s.limparCarrinho);
-  const itensComDescontoDistribuido = usePDVStore(
-    (s) => s.itensComDescontoDistribuido,
-  );
-  const descontoGeralAbsoluto = usePDVStore((s) => s.descontoGeralAbsoluto);
   const totalComDesconto = usePDVStore((s) => s.totalComDesconto());
   const totalPago = usePDVStore((s) => s.totalPago());
   const diferenca = usePDVStore((s) => s.diferencaPagamento());
@@ -108,7 +110,11 @@ export default function AcoesPDV() {
     // Distribui o desconto geral proporcionalmente nos itens antes de salvar.
     // A tabela vendas continua guardando o desconto_geral em `desconto`, e
     // itens_venda recebe `desconto_item` já com o rateio incluído.
-    const itensRateados = itensComDescontoDistribuido();
+    const itensRateados = distribuirDesconto(
+      itens,
+      descontoGeralBruto,
+      tipoDesconto,
+    );
 
     const formaPrincipal = pagamentos[0]?.forma ?? formaPagamento ?? null;
     const temFiado = pagamentos.some((p) => p.forma === 'fiado');
@@ -120,7 +126,7 @@ export default function AcoesPDV() {
       situacao: !ehOrcamento && temFiado ? 'a_pagar' : 'pago',
       forma_pagamento: formaPrincipal,
       parcelas,
-      desconto: descontoGeralAbsoluto(),
+      desconto: calcularDescontoAbsoluto(itens, descontoGeralBruto, tipoDesconto),
       observacao,
       tipo_operacao: tipoOperacao,
       pagamentos: pagamentos.map((p) => ({

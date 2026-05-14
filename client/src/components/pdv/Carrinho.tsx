@@ -1,9 +1,14 @@
+import { useMemo } from 'react';
 import { AlertTriangle, ShoppingCart, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import MoneyInput from '@/components/ui/MoneyInput';
 import { formatMoney } from '@/hooks/useMoneyInput';
 import { usePDVStore } from '@/store/pdvStore';
+import {
+  calcularDescontoAbsoluto,
+  distribuirDesconto,
+} from '@/utils/calculosVenda';
 import BuscaProduto from './BuscaProduto';
 
 function parseNumero(s: string): number {
@@ -30,8 +35,17 @@ export default function Carrinho() {
   const atualizarPreco = usePDVStore((s) => s.atualizarPreco);
   const atualizarDesconto = usePDVStore((s) => s.atualizarDesconto);
   const removerItem = usePDVStore((s) => s.removerItem);
-  const itensCalculados = usePDVStore((s) => s.itensComDescontoDistribuido());
-  const descontoAbs = usePDVStore((s) => s.descontoGeralAbsoluto());
+
+  // Memoiza o rateio do desconto. Cálculo puro (sem efeitos colaterais),
+  // recalcula apenas quando itens / desconto / tipo mudam.
+  const itensCalculados = useMemo(
+    () => distribuirDesconto(itens, descontoGeral, tipoDesconto),
+    [itens, descontoGeral, tipoDesconto],
+  );
+  const descontoAbs = useMemo(
+    () => calcularDescontoAbsoluto(itens, descontoGeral, tipoDesconto),
+    [itens, descontoGeral, tipoDesconto],
+  );
 
   return (
     <div className="flex h-full min-h-0 flex-col">
