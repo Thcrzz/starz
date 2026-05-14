@@ -231,7 +231,7 @@ export default function ModalComprovante({
           </div>
           <table className="w-full border-collapse text-xs">
             <thead>
-              <tr className="bg-zinc-100 text-zinc-800">
+              <tr className="print-header-bg bg-[#F97316] font-bold text-white">
                 <th className="border border-zinc-300 px-2 py-1 text-left">Tipo</th>
                 <th className="border border-zinc-300 px-2 py-1 text-left">
                   Descrição
@@ -333,7 +333,7 @@ export default function ModalComprovante({
           </div>
           <table className="w-full border-collapse text-xs">
             <thead>
-              <tr className="bg-zinc-100 text-zinc-800">
+              <tr className="print-header-bg bg-[#F97316] font-bold text-white">
                 <th className="border border-zinc-300 px-2 py-1 text-left">#</th>
                 <th className="border border-zinc-300 px-2 py-1 text-right">
                   Valor
