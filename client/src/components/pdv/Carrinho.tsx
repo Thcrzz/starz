@@ -13,9 +13,10 @@ function parseNumero(s: string): number {
 
 /**
  * Layout das colunas do carrinho — usado em cabeçalho e linhas para garantir alinhamento.
- * Produto: flex-1 | QTD: 80px | Preço Unit.: 120px | Desconto: 110px | Total: 100px | Ações: 36px
+ * Produto: flex-1 | QTD: 70px | Preço Unit.: 110px | Desconto: 100px | Total: 110px | Ações: 36px
+ * Colunas numéricas próximas (gap-x-2) pra dar espaço pra descrição.
  */
-const GRID_COLS = 'grid-cols-[1fr_80px_120px_110px_100px_36px]';
+const GRID_COLS = 'grid-cols-[1fr_70px_110px_100px_110px_36px]';
 
 export default function Carrinho() {
   const itens = usePDVStore((s) => s.itens);
@@ -62,7 +63,7 @@ export default function Carrinho() {
           <div className="text-sm">
             {/* Cabeçalho do grid */}
             <div
-              className={`sticky top-0 z-10 grid ${GRID_COLS} gap-x-4 border-b border-border bg-card px-3 py-2 text-xs uppercase text-muted-foreground`}
+              className={`sticky top-0 z-10 grid ${GRID_COLS} gap-x-2 border-b border-border bg-card px-3 py-2 text-xs uppercase text-muted-foreground`}
             >
               <div className="text-left">Produto</div>
               <div className="text-center">Qtd</div>
@@ -85,7 +86,7 @@ export default function Carrinho() {
               return (
                 <div
                   key={item.id}
-                  className={`grid ${GRID_COLS} items-center gap-x-4 border-b border-border px-3 py-2 last:border-b-0 ${fundo}`}
+                  className={`grid ${GRID_COLS} items-center gap-x-2 border-b border-border px-3 py-2 last:border-b-0 ${fundo}`}
                 >
                   {/* Produto */}
                   <div className="min-w-0">
