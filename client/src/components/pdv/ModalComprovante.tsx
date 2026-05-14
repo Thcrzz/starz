@@ -233,20 +233,20 @@ export default function ModalComprovante({
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="print-header-bg bg-[#FE6100] font-bold text-white">
-                <th className="border border-zinc-300 px-2 py-1 text-left">Tipo</th>
-                <th className="border border-zinc-300 px-2 py-1 text-left">
+                <th className="px-2 py-1 text-left">Tipo</th>
+                <th className="px-2 py-1 text-left">
                   Descrição
                 </th>
-                <th className="border border-zinc-300 px-2 py-1 text-right">
+                <th className="px-2 py-1 text-right">
                   Preço Unit.
                 </th>
-                <th className="border border-zinc-300 px-2 py-1 text-right">
+                <th className="px-2 py-1 text-right">
                   Quant.
                 </th>
-                <th className="border border-zinc-300 px-2 py-1 text-right">
+                <th className="px-2 py-1 text-right">
                   Desconto
                 </th>
-                <th className="border border-zinc-300 px-2 py-1 text-right">
+                <th className="px-2 py-1 text-right">
                   Total
                 </th>
               </tr>
@@ -259,22 +259,22 @@ export default function ModalComprovante({
                   idx % 2 === 0 ? 'print-row-even' : 'print-row-odd';
                 return (
                   <tr key={it.id} className={`${zebraScreen} ${zebraPrint}`}>
-                    <td className="border border-zinc-300 px-2 py-1">
+                    <td className="px-2 py-1">
                       {it.e_avulso ? 'Avulso' : 'Produto'}
                     </td>
-                    <td className="border border-zinc-300 px-2 py-1">
+                    <td className="px-2 py-1">
                       {it.descricao_snapshot}
                     </td>
-                    <td className="border border-zinc-300 px-2 py-1 text-right">
+                    <td className="px-2 py-1 text-right">
                       {formatBRL(it.preco_unitario)}
                     </td>
-                    <td className="border border-zinc-300 px-2 py-1 text-right">
+                    <td className="px-2 py-1 text-right">
                       {it.quantidade}
                     </td>
-                    <td className="border border-zinc-300 px-2 py-1 text-right">
+                    <td className="px-2 py-1 text-right">
                       {formatBRL(it.desconto_item ?? 0)}
                     </td>
-                    <td className="border border-zinc-300 px-2 py-1 text-right">
+                    <td className="px-2 py-1 text-right">
                       {formatBRL(it.total_item)}
                     </td>
                   </tr>
@@ -284,16 +284,16 @@ export default function ModalComprovante({
             <tfoot>
               {/* Linha SUBTOTAL — fundo cinza, dentro da tabela */}
               <tr className="bg-[#f5f5f5] font-bold print-row-odd">
-                <td className="border border-zinc-300 px-2 py-1"></td>
-                <td className="border border-zinc-300 px-2 py-1"></td>
-                <td className="border border-zinc-300 px-2 py-1"></td>
-                <td className="border border-zinc-300 px-2 py-1 text-right">
+                <td className="px-2 py-1"></td>
+                <td className="px-2 py-1"></td>
+                <td className="px-2 py-1"></td>
+                <td className="px-2 py-1 text-right">
                   SUBTOTAL
                 </td>
-                <td className="border border-zinc-300 px-2 py-1 text-center">
+                <td className="px-2 py-1 text-center">
                   {venda.itens.length}
                 </td>
-                <td className="border border-zinc-300 px-2 py-1 text-right">
+                <td className="px-2 py-1 text-right">
                   {formatBRL(venda.subtotal)}
                 </td>
               </tr>
@@ -301,11 +301,11 @@ export default function ModalComprovante({
               <tr className="print-header-bg bg-[#FE6100] font-bold text-white">
                 <td
                   colSpan={5}
-                  className="border border-zinc-300 px-2 py-1.5 text-right text-sm"
+                  className="px-2 py-1.5 text-right text-sm"
                 >
                   TOTAL GERAL
                 </td>
-                <td className="border border-zinc-300 px-2 py-1.5 text-right text-base">
+                <td className="px-2 py-1.5 text-right text-base">
                   {formatBRL(venda.total)}
                 </td>
               </tr>
@@ -322,17 +322,17 @@ export default function ModalComprovante({
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="print-header-bg bg-[#FE6100] font-bold text-white">
-                <th className="border border-zinc-300 px-2 py-1 text-left">#</th>
-                <th className="border border-zinc-300 px-2 py-1 text-right">
+                <th className="px-2 py-1 text-left">#</th>
+                <th className="px-2 py-1 text-right">
                   Valor
                 </th>
-                <th className="border border-zinc-300 px-2 py-1 text-left">
+                <th className="px-2 py-1 text-left">
                   Data pgto
                 </th>
-                <th className="border border-zinc-300 px-2 py-1 text-left">
+                <th className="px-2 py-1 text-left">
                   Forma de pagamento
                 </th>
-                <th className="border border-zinc-300 px-2 py-1 text-left">
+                <th className="px-2 py-1 text-left">
                   Situação
                 </th>
               </tr>
@@ -345,17 +345,17 @@ export default function ModalComprovante({
                   idx % 2 === 0 ? 'print-row-even' : 'print-row-odd';
                 return (
                   <tr key={l.n} className={`${zebraScreen} ${zebraPrint}`}>
-                    <td className="border border-zinc-300 px-2 py-1">{l.n}</td>
-                    <td className="border border-zinc-300 px-2 py-1 text-right">
+                    <td className="px-2 py-1">{l.n}</td>
+                    <td className="px-2 py-1 text-right">
                       {formatBRL(l.valor)}
                     </td>
-                    <td className="border border-zinc-300 px-2 py-1">
+                    <td className="px-2 py-1">
                       {l.dataPgto}
                     </td>
-                    <td className="border border-zinc-300 px-2 py-1">
+                    <td className="px-2 py-1">
                       {l.forma}
                     </td>
-                    <td className="border border-zinc-300 px-2 py-1">
+                    <td className="px-2 py-1">
                       {l.situacao}
                     </td>
                   </tr>
