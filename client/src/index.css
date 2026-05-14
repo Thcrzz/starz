@@ -99,11 +99,11 @@ input[type='number'] {
 
   /* Exceção: textos coloridos importantes */
   .comprovante-print-wrapper .print-orange {
-    color: #E8630A !important;
+    color: #FE6100 !important;
   }
 
   .comprovante-print-wrapper .print-header-bg {
-    background-color: #E8630A !important;
+    background-color: #FE6100 !important;
     color: white !important;
   }
 

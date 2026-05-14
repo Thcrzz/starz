@@ -165,7 +165,7 @@ export default function ModalComprovante({
 
         {/* Dados da Venda / Orçamento */}
         <div className="mb-4">
-          <div className="print-header-bg mb-1 inline-block bg-[#F97316] px-2 py-0.5 text-xs font-bold text-white">
+          <div className="mb-2 text-sm font-bold text-gray-900">
             {tituloSecaoDados}
           </div>
           <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
@@ -221,12 +221,12 @@ export default function ModalComprovante({
 
         {/* Itens */}
         <div className="mb-4">
-          <div className="print-header-bg mb-1 inline-block bg-[#F97316] px-2 py-0.5 text-xs font-bold text-white">
+          <div className="mb-2 text-sm font-bold text-gray-900">
             {tituloSecaoItens}
           </div>
           <table className="w-full border-collapse text-xs">
             <thead>
-              <tr className="print-header-bg bg-[#F97316] font-bold text-white">
+              <tr className="print-header-bg bg-[#FE6100] font-bold text-white">
                 <th className="border border-zinc-300 px-2 py-1 text-left">Tipo</th>
                 <th className="border border-zinc-300 px-2 py-1 text-left">
                   Descrição
@@ -292,7 +292,7 @@ export default function ModalComprovante({
                 </td>
               </tr>
               {/* Linha TOTAL GERAL — fundo laranja, dentro da tabela */}
-              <tr className="print-header-bg bg-[#F97316] font-bold text-white">
+              <tr className="print-header-bg bg-[#FE6100] font-bold text-white">
                 <td
                   colSpan={5}
                   className="border border-zinc-300 px-2 py-1.5 text-right text-sm"
@@ -309,12 +309,10 @@ export default function ModalComprovante({
 
         {/* Financeiro */}
         <div className="mb-4">
-          <div className="print-header-bg mb-1 inline-block bg-[#F97316] px-2 py-0.5 text-xs font-bold text-white">
-            FINANCEIRO
-          </div>
+          <div className="mb-2 text-sm font-bold text-gray-900">FINANCEIRO</div>
           <table className="w-full border-collapse text-xs">
             <thead>
-              <tr className="print-header-bg bg-[#F97316] font-bold text-white">
+              <tr className="print-header-bg bg-[#FE6100] font-bold text-white">
                 <th className="border border-zinc-300 px-2 py-1 text-left">#</th>
                 <th className="border border-zinc-300 px-2 py-1 text-right">
                   Valor
