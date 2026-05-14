@@ -1,7 +1,6 @@
-import { AlertTriangle, ShoppingCart, X } from 'lucide-react';
+import { AlertTriangle, ShoppingCart, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
 import { usePDVStore } from '@/store/pdvStore';
 import BuscaProduto from './BuscaProduto';
 
@@ -19,9 +18,9 @@ function parseNumero(s: string): number {
 
 /**
  * Layout das colunas do carrinho — usado em cabeçalho e linhas para garantir alinhamento.
- * Produto: flex-1 | QTD: 90px | Preço Unit.: 130px | Desconto: 110px | Total: 110px | Ações: 40px
+ * Produto: flex-1 | QTD: 80px | Preço Unit.: 120px | Desconto: 110px | Total: 100px | Ações: 36px
  */
-const GRID_COLS = 'grid-cols-[1fr_90px_130px_110px_110px_40px]';
+const GRID_COLS = 'grid-cols-[1fr_80px_120px_110px_100px_36px]';
 
 export default function Carrinho() {
   const itens = usePDVStore((s) => s.itens);
@@ -64,7 +63,7 @@ export default function Carrinho() {
           <div className="text-sm">
             {/* Cabeçalho do grid */}
             <div
-              className={`sticky top-0 z-10 grid ${GRID_COLS} gap-2 border-b border-border bg-card px-3 py-2 text-xs uppercase text-muted-foreground`}
+              className={`sticky top-0 z-10 grid ${GRID_COLS} gap-x-4 border-b border-border bg-card px-3 py-2 text-xs uppercase text-muted-foreground`}
             >
               <div className="text-left">Produto</div>
               <div className="text-center">Qtd</div>
@@ -75,15 +74,16 @@ export default function Carrinho() {
             </div>
 
             {/* Linhas */}
-            {itens.map((item) => {
+            {itens.map((item, idx) => {
               const precoAlterado =
                 item.preco_unitario !== item.preco_original;
               const passoQtd =
                 item.unidade === 'm' || item.unidade === 'kg' ? 0.001 : 1;
+              const fundo = idx % 2 === 0 ? 'bg-card' : 'bg-secondary/30';
               return (
                 <div
                   key={item.id}
-                  className={`grid ${GRID_COLS} items-center gap-2 border-b border-border px-3 py-2 last:border-b-0`}
+                  className={`grid ${GRID_COLS} items-center gap-x-4 border-b border-border px-3 py-2 last:border-b-0 ${fundo}`}
                 >
                   {/* Produto */}
                   <div className="min-w-0">
@@ -114,7 +114,7 @@ export default function Carrinho() {
                     onChange={(e) =>
                       atualizarQuantidade(item.id, parseNumero(e.target.value))
                     }
-                    className="h-8 w-full text-center"
+                    className="h-8 w-full px-2 text-center"
                   />
 
                   {/* Preço unitário */}
@@ -130,7 +130,7 @@ export default function Carrinho() {
                       onChange={(e) =>
                         atualizarPreco(item.id, parseNumero(e.target.value))
                       }
-                      className="h-8 w-full pl-8 text-right"
+                      className="h-8 w-full px-2 pl-8 text-right"
                     />
                     {precoAlterado && (
                       <AlertTriangle
@@ -156,24 +156,24 @@ export default function Carrinho() {
                           parseNumero(e.target.value),
                         )
                       }
-                      className="h-8 w-full pl-8 text-right"
+                      className="h-8 w-full px-2 pl-8 text-right"
                     />
                   </div>
 
                   {/* Total */}
-                  <div className="text-center font-semibold text-green-500">
+                  <div className="text-center font-semibold text-white">
                     {formatBRL(item.total_item)}
                   </div>
 
                   {/* Ações */}
-                  <Button
-                    variant="ghost"
-                    size="sm"
+                  <button
+                    type="button"
                     onClick={() => removerItem(item.id)}
-                    className="h-7 w-7 justify-self-center p-0 text-red-500 hover:bg-red-500/10 hover:text-red-400"
+                    className="flex h-7 w-7 items-center justify-center justify-self-center rounded text-muted-foreground transition-colors hover:text-destructive"
+                    aria-label="Remover item"
                   >
-                    <X className="h-4 w-4" />
-                  </Button>
+                    <Trash2 className="h-4 w-4" />
+                  </button>
                 </div>
               );
             })}
