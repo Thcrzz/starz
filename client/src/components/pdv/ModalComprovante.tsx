@@ -164,7 +164,10 @@ export default function ModalComprovante({
         </div>
 
         {/* Dados da Venda / Orçamento */}
-        <div className="mb-4">
+        <div
+          className="mb-4 pb-4"
+          style={{ borderBottom: '1px solid #e0e0e0' }}
+        >
           <div className="mb-2 text-sm font-bold text-gray-900">
             {tituloSecaoDados}
           </div>
@@ -220,7 +223,10 @@ export default function ModalComprovante({
         </div>
 
         {/* Itens */}
-        <div className="mb-4">
+        <div
+          className="mb-4 pb-4"
+          style={{ borderBottom: '1px solid #e0e0e0' }}
+        >
           <div className="mb-2 text-sm font-bold text-gray-900">
             {tituloSecaoItens}
           </div>
@@ -308,7 +314,10 @@ export default function ModalComprovante({
         </div>
 
         {/* Financeiro */}
-        <div className="mb-4">
+        <div
+          className="mb-4 pb-4"
+          style={{ borderBottom: '1px solid #e0e0e0' }}
+        >
           <div className="mb-2 text-sm font-bold text-gray-900">FINANCEIRO</div>
           <table className="w-full border-collapse text-xs">
             <thead>
