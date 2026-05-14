@@ -30,10 +30,13 @@ export default function AcoesPDV() {
   const retiradoPor = usePDVStore((s) => s.retirado_por);
   const vendedorId = usePDVStore((s) => s.vendedor_id);
   const parcelas = usePDVStore((s) => s.parcelas);
-  const descontoGeral = usePDVStore((s) => s.desconto_geral);
   const observacao = usePDVStore((s) => s.observacao);
   const tipoOperacao = usePDVStore((s) => s.tipo_operacao);
   const limparCarrinho = usePDVStore((s) => s.limparCarrinho);
+  const itensComDescontoDistribuido = usePDVStore(
+    (s) => s.itensComDescontoDistribuido,
+  );
+  const descontoGeralAbsoluto = usePDVStore((s) => s.descontoGeralAbsoluto);
 
   const [confirmandoCancelar, setConfirmandoCancelar] = useState(false);
   const [acaoEmAndamento, setAcaoEmAndamento] = useState<Acao | null>(null);
@@ -81,6 +84,11 @@ export default function AcoesPDV() {
       return;
     }
 
+    // Distribui o desconto geral proporcionalmente nos itens antes de salvar.
+    // A tabela vendas continua guardando o desconto_geral em `desconto`, e
+    // itens_venda recebe `desconto_item` já com o rateio incluído.
+    const itensRateados = itensComDescontoDistribuido();
+
     const payload: NovaVendaPayload = {
       cliente_id: clienteId,
       retirado_por: retiradoPor,
@@ -89,17 +97,17 @@ export default function AcoesPDV() {
         !ehOrcamento && formaPagamento === 'fiado' ? 'a_pagar' : 'pago',
       forma_pagamento: formaPagamento ?? null,
       parcelas,
-      desconto: descontoGeral,
+      desconto: descontoGeralAbsoluto(),
       observacao,
       tipo_operacao: tipoOperacao,
-      itens: itens.map((i) => ({
+      itens: itensRateados.map((i) => ({
         variacao_id: i.variacao_id,
         descricao_snapshot: i.descricao,
         preco_unitario: i.preco_unitario,
         preco_original: i.preco_original,
         quantidade: i.quantidade,
-        desconto_item: i.desconto_item,
-        total_item: i.total_item,
+        desconto_item: i.desconto_item_final,
+        total_item: i.total_item_final,
         e_avulso: i.e_avulso,
       })),
     };

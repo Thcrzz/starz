@@ -1,5 +1,9 @@
 import { create } from 'zustand';
-import type { EstadoPDV, ItemCarrinho } from '@/types/pdv';
+import type {
+  EstadoPDV,
+  ItemCarrinho,
+  ItemCarrinhoCalculado,
+} from '@/types/pdv';
 
 interface PDVStore extends EstadoPDV {
   adicionarItem: (item: ItemCarrinho) => void;
@@ -20,6 +24,10 @@ interface PDVStore extends EstadoPDV {
   setTipoDesconto: (tipo: 'valor' | 'porcentagem') => void;
   subtotal: () => number;
   totalComDesconto: () => number;
+  /** Valor absoluto do desconto geral (em R$, qualquer que seja o tipo) */
+  descontoGeralAbsoluto: () => number;
+  /** Itens com o desconto geral rateado proporcionalmente */
+  itensComDescontoDistribuido: () => ItemCarrinhoCalculado[];
 }
 
 const estadoInicial: EstadoPDV = {
@@ -134,5 +142,56 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
       return Math.max(0, sub * (1 - pct / 100));
     }
     return Math.max(0, sub - state.desconto_geral);
+  },
+
+  descontoGeralAbsoluto: () => {
+    const state = get();
+    const sub = state.itens.reduce((acc, i) => acc + i.total_item, 0);
+    const tot =
+      state.tipo_desconto === 'porcentagem'
+        ? Math.max(
+            0,
+            sub *
+              (1 - Math.min(100, Math.max(0, state.desconto_geral)) / 100),
+          )
+        : Math.max(0, sub - state.desconto_geral);
+    return Math.max(0, sub - tot);
+  },
+
+  itensComDescontoDistribuido: () => {
+    const state = get();
+    const sub = state.itens.reduce((acc, i) => acc + i.total_item, 0);
+    const totalFinal =
+      state.tipo_desconto === 'porcentagem'
+        ? Math.max(
+            0,
+            sub *
+              (1 - Math.min(100, Math.max(0, state.desconto_geral)) / 100),
+          )
+        : Math.max(0, sub - state.desconto_geral);
+    const descAbs = Math.max(0, sub - totalFinal);
+
+    if (descAbs <= 0 || sub <= 0) {
+      return state.itens.map((i) => ({
+        ...i,
+        desconto_distribuido: 0,
+        desconto_item_final: i.desconto_item,
+        total_item_final: i.total_item,
+      }));
+    }
+
+    return state.itens.map((i) => {
+      const participacao = i.total_item / sub;
+      const distribuido = participacao * descAbs;
+      const descontoFinal = (i.desconto_item || 0) + distribuido;
+      const bruto = i.preco_unitario * i.quantidade;
+      const totalFinalItem = Math.max(0, bruto - descontoFinal);
+      return {
+        ...i,
+        desconto_distribuido: distribuido,
+        desconto_item_final: descontoFinal,
+        total_item_final: totalFinalItem,
+      };
+    });
   },
 }));
