@@ -124,6 +124,15 @@ input[type='number'] {
     print-color-adjust: exact;
   }
 
+  /* Rodapé "Powered by STARZ" fixo no fundo de cada página impressa */
+  .comprovante-footer {
+    position: fixed;
+    bottom: 20px;
+    left: 0;
+    right: 0;
+    text-align: center;
+  }
+
   /* Oculta botões dentro do modal durante impressão */
   .no-print {
     display: none !important;

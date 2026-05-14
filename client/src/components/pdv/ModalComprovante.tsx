@@ -146,7 +146,7 @@ export default function ModalComprovante({
   function renderComprovante() {
     if (!venda || !empresa) return null;
     return (
-      <div className="bg-white p-6 text-sm text-gray-900">
+      <div className="flex min-h-screen flex-col bg-white p-6 text-sm text-gray-900">
         {/* Cabeçalho */}
         <div className="mb-4 flex items-start justify-between gap-6 border-b border-zinc-300 pb-3">
           <img
@@ -341,7 +341,7 @@ export default function ModalComprovante({
           </table>
         </div>
 
-        {/* Rodapé — assinatura + Powered by STARZ */}
+        {/* Rodapé — assinatura */}
         <div className="mt-6 border-t border-zinc-300 pt-3 text-xs">
           {venda.retirado_por && (
             <div className="mb-2">
@@ -355,15 +355,16 @@ export default function ModalComprovante({
               {venda.retirado_por ?? cliente?.nome ?? 'Assinatura'}
             </div>
           </div>
+        </div>
 
-          <div className="mt-4 flex items-center justify-center gap-2 border-t border-zinc-300 pt-3">
-            <span className="text-xs text-zinc-600">Powered by</span>
-            <img
-              src="/STARZ LOGO Vermelha.png"
-              alt="STARZ"
-              style={{ height: '16px', objectFit: 'contain' }}
-            />
-          </div>
+        {/* Powered by STARZ — pé da folha (mt-auto em tela, position fixed na impressão) */}
+        <div className="comprovante-footer mt-auto flex items-center justify-center gap-2 pt-4">
+          <span className="text-xs text-zinc-600">Powered by</span>
+          <img
+            src="/STARZ LOGO Vermelha.png"
+            alt="STARZ"
+            style={{ height: '16px', objectFit: 'contain' }}
+          />
         </div>
       </div>
     );
