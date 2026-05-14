@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import dotenv from 'dotenv';
 import { up as migration001 } from './migrations/001_initial';
+import { up as migration002 } from './migrations/002_movimentacoes_estoque';
 
 dotenv.config();
 
@@ -63,6 +64,7 @@ function executarMigration(nome: string, fn: (db: Database.Database) => void): v
 export function inicializarBanco(): void {
   ensureMigrationsTable();
   executarMigration('001_initial', migration001);
+  executarMigration('002_movimentacoes_estoque', migration002);
 }
 
 // Inicializa imediatamente ao importar este módulo

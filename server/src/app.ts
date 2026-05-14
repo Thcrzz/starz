@@ -14,6 +14,7 @@ import authRouter from './routes/auth';
 import produtosRouter from './routes/produtos';
 import usuariosRouter from './routes/usuarios';
 import clientesRouter from './routes/clientes';
+import vendasRouter from './routes/vendas';
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3001;
@@ -37,6 +38,9 @@ app.use('/api/usuarios', usuariosRouter);
 
 // Rotas de clientes (busca, detalhe)
 app.use('/api/clientes', clientesRouter);
+
+// Rotas de vendas (criação, detalhe, comprovante)
+app.use('/api/vendas', vendasRouter);
 
 // Em produção, serve o build do front (../client/dist)
 if (process.env.NODE_ENV === 'production') {
