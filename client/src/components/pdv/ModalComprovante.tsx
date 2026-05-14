@@ -149,24 +149,22 @@ export default function ModalComprovante({
       <div className="bg-white p-6 text-sm text-gray-900">
         {/* Cabeçalho */}
         <div className="mb-4 flex items-start justify-between gap-6 border-b border-zinc-300 pb-3">
-          <div className="flex flex-col gap-1">
-            <img
-              src="/Logo_Korta_Terra_Primario_Laranja_0,75.png"
-              alt="Korta Terra"
-              style={{
-                height: '60px',
-                maxWidth: '200px',
-                objectFit: 'contain',
-              }}
-            />
-            <div className="text-xs text-zinc-600">Sistema STARZ</div>
-          </div>
-          <div className="text-right text-xs">
-            <div className="font-semibold">{empresa.nome}</div>
-            {empresa.cnpj && <div>CNPJ: {empresa.cnpj}</div>}
-            {empresa.endereco && <div>{empresa.endereco}</div>}
-            {empresa.telefone && <div>Tel: {empresa.telefone}</div>}
-            {empresa.email && <div>{empresa.email}</div>}
+          <img
+            src="/Logo_Korta_Terra_Primario_Laranja_0,75.png"
+            alt="Korta Terra"
+            style={{
+              height: '80px',
+              maxWidth: '240px',
+              objectFit: 'contain',
+            }}
+          />
+          <div className="text-right">
+            <div className="text-sm font-semibold">Korta Terra</div>
+            <div className="text-sm">Tel: (15) 3244-2655</div>
+            <div className="text-sm">kortaterra@gmail.com</div>
+            <div className="text-xs text-gray-500">
+              Av. Tancredo Neves, 606, Vila Xavier, Piedade-SP, 18170-112
+            </div>
           </div>
         </div>
 
