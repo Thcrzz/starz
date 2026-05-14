@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button';
 import Carrinho from '@/components/pdv/Carrinho';
 import SeletorVendedor from '@/components/pdv/SeletorVendedor';
 import SeletorCliente from '@/components/pdv/SeletorCliente';
+import ParteFinanceira from '@/components/pdv/ParteFinanceira';
 
 /**
  * Página de PDV — layout base com duas colunas.
@@ -24,14 +25,9 @@ export default function PDVPage() {
         {/* Financeiro */}
         <section
           id="pdv-financeiro"
-          className="flex min-h-0 flex-1 flex-col rounded-lg border border-border bg-card"
+          className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card"
         >
-          <div className="border-b border-border px-4 py-3">
-            <h2 className="text-base font-semibold">Parte Financeira</h2>
-          </div>
-          <div className="flex flex-1 items-center justify-center p-6 text-sm text-muted-foreground">
-            Formas de pagamento, parcelas e finalização serão implementadas na Parte 2B.
-          </div>
+          <ParteFinanceira />
         </section>
       </div>
 

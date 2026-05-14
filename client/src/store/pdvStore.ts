@@ -15,6 +15,7 @@ interface PDVStore extends EstadoPDV {
   setParcelas: (n: number) => void;
   setDescontoGeral: (v: number) => void;
   setRetiradoPor: (nome: string) => void;
+  setObservacao: (obs: string) => void;
   subtotal: () => number;
   totalComDesconto: () => number;
 }
@@ -110,6 +111,8 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
   setDescontoGeral: (v) => set({ desconto_geral: Math.max(0, v) }),
 
   setRetiradoPor: (nome) => set({ retirado_por: nome }),
+
+  setObservacao: (obs) => set({ observacao: obs }),
 
   subtotal: () => get().itens.reduce((acc, i) => acc + i.total_item, 0),
 
