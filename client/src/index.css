@@ -72,97 +72,90 @@ input[type='number'] {
 }
 
 @media print {
-  /* Força browsers a respeitarem cores de fundo e backgrounds. Mesmo assim o
-     usuário precisa marcar "Gráficos de plano de fundo" no diálogo de impressão. */
-  * {
+  @page {
+    margin: 1cm;
+    size: A4;
+  }
+
+  /* Força impressão de cores em TODOS os elementos */
+  *,
+  *::before,
+  *::after {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     color-adjust: exact !important;
   }
 
-  .comprovante-print-wrapper [style*='background'],
-  .comprovante-print-wrapper [class*='bg-'] {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* Oculta tudo */
-  body > * {
+  /* Oculta tudo menos o wrapper do comprovante (que vive como portal no body) */
+  body > *:not(.comprovante-print-wrapper) {
     display: none !important;
   }
 
-  /* Mostra apenas o comprovante */
   .comprovante-print-wrapper {
     display: block !important;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: white;
-    z-index: 99999;
-    padding: 20px;
-    color: black !important;
-  }
-
-  .comprovante-print-wrapper * {
-    color: black !important;
-    border-color: #ccc !important;
+    position: relative !important;
+    width: 100% !important;
     background: white !important;
+    color: black !important;
+    padding: 0 !important;
+    margin: 0 !important;
   }
 
-  /* Exceção: textos coloridos importantes */
-  .comprovante-print-wrapper .print-orange {
-    color: #FE6100 !important;
+  .no-print {
+    display: none !important;
   }
 
+  /* Tabelas — backgrounds preservados */
+  .comprovante-print-wrapper table {
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+  .comprovante-print-wrapper thead tr,
   .comprovante-print-wrapper .print-header-bg {
     background-color: #FE6100 !important;
     color: white !important;
   }
 
+  .comprovante-print-wrapper thead th,
+  .comprovante-print-wrapper thead td,
   .comprovante-print-wrapper .print-header-bg * {
+    background-color: #FE6100 !important;
     color: white !important;
   }
 
-  /* Garante que imagens (logos) saiam com as cores originais na impressão */
+  /* Zebra rows */
+  .comprovante-print-wrapper tbody tr:nth-child(even) {
+    background-color: #f5f5f5 !important;
+  }
+  .comprovante-print-wrapper tbody tr:nth-child(odd) {
+    background-color: #ffffff !important;
+  }
+
+  /* Linha SUBTOTAL — fundo cinza claro */
+  .comprovante-print-wrapper .row-subtotal,
+  .comprovante-print-wrapper .row-subtotal td {
+    background-color: #f5f5f5 !important;
+  }
+
+  /* Linha TOTAL GERAL — cinza escuro com texto branco */
+  .comprovante-print-wrapper .row-total-geral,
+  .comprovante-print-wrapper .row-total-geral td {
+    background-color: #4a4a4a !important;
+    color: white !important;
+  }
+
+  /* Imagens (logos) preservam cores originais e fundo transparente */
   .comprovante-print-wrapper img {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
     background: transparent !important;
   }
 
-  /* Regra global para impressão de imagens — mantém cores originais */
-  img {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
-  /* Rodapé "Powered by STARZ" fixo no fundo de cada página impressa */
+  /* Rodapé "Powered by STARZ" fixo no fundo da página impressa */
   .comprovante-footer {
     position: fixed;
     bottom: 20px;
     left: 0;
     right: 0;
     text-align: center;
-  }
-
-  /* Zebra das tabelas (sobrescreve a regra * { background: white !important }) */
-  .comprovante-print-wrapper .print-row-odd,
-  .comprovante-print-wrapper .print-row-odd * {
-    background-color: #f5f5f5 !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  .comprovante-print-wrapper .print-row-even,
-  .comprovante-print-wrapper .print-row-even * {
-    background-color: #ffffff !important;
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-
-  /* Oculta botões dentro do modal durante impressão */
-  .no-print {
-    display: none !important;
   }
 }

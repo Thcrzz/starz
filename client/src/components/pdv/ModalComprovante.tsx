@@ -218,23 +218,70 @@ export default function ModalComprovante({
           </div>
           <table className="w-full border-collapse text-xs">
             <thead>
-              <tr className="print-header-bg bg-[#FE6100] font-bold text-white">
-                <th className="px-2 py-1 text-left">Tipo</th>
-                <th className="px-2 py-1 text-left">
+              <tr
+                className="print-header-bg bg-[#FE6100] font-bold text-white"
+                style={{ backgroundColor: '#FE6100', color: 'white' }}
+              >
+                <td
+                  className="px-2 py-1 text-left"
+                  style={{
+                    backgroundColor: '#FE6100',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Tipo
+                </td>
+                <td
+                  className="px-2 py-1 text-left"
+                  style={{
+                    backgroundColor: '#FE6100',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Descrição
-                </th>
-                <th className="px-2 py-1 text-right">
+                </td>
+                <td
+                  className="px-2 py-1 text-right"
+                  style={{
+                    backgroundColor: '#FE6100',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Preço Unit.
-                </th>
-                <th className="px-2 py-1 text-right">
+                </td>
+                <td
+                  className="px-2 py-1 text-right"
+                  style={{
+                    backgroundColor: '#FE6100',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Quant.
-                </th>
-                <th className="px-2 py-1 text-right">
+                </td>
+                <td
+                  className="px-2 py-1 text-right"
+                  style={{
+                    backgroundColor: '#FE6100',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Desconto
-                </th>
-                <th className="px-2 py-1 text-right">
+                </td>
+                <td
+                  className="px-2 py-1 text-right"
+                  style={{
+                    backgroundColor: '#FE6100',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Total
-                </th>
+                </td>
               </tr>
             </thead>
             <tbody>
@@ -269,15 +316,38 @@ export default function ModalComprovante({
             </tbody>
             <tfoot>
               {/* Linha SUBTOTAL — "SUBTOTAL" sob Preço Unit., qtd sob Quant. */}
-              <tr className="bg-[#f5f5f5] font-bold print-row-odd">
-                <td className="px-2 py-1"></td>
-                <td className="px-2 py-1"></td>
-                <td className="px-2 py-1 text-right">SUBTOTAL</td>
-                <td className="px-2 py-1 text-right">
+              <tr
+                className="row-subtotal bg-[#f5f5f5] font-bold"
+                style={{ backgroundColor: '#f5f5f5' }}
+              >
+                <td
+                  className="px-2 py-1"
+                  style={{ backgroundColor: '#f5f5f5' }}
+                ></td>
+                <td
+                  className="px-2 py-1"
+                  style={{ backgroundColor: '#f5f5f5' }}
+                ></td>
+                <td
+                  className="px-2 py-1 text-right"
+                  style={{ backgroundColor: '#f5f5f5' }}
+                >
+                  SUBTOTAL
+                </td>
+                <td
+                  className="px-2 py-1 text-right"
+                  style={{ backgroundColor: '#f5f5f5' }}
+                >
                   {venda.itens.length}
                 </td>
-                <td className="px-2 py-1"></td>
-                <td className="px-2 py-1 text-right">
+                <td
+                  className="px-2 py-1"
+                  style={{ backgroundColor: '#f5f5f5' }}
+                ></td>
+                <td
+                  className="px-2 py-1 text-right"
+                  style={{ backgroundColor: '#f5f5f5' }}
+                >
                   {formatMoney(venda.subtotal)}
                 </td>
               </tr>
@@ -309,20 +379,60 @@ export default function ModalComprovante({
           <div className="mb-2 text-sm font-bold text-gray-900">FINANCEIRO</div>
           <table className="w-full border-collapse text-xs">
             <thead>
-              <tr className="print-header-bg bg-[#FE6100] font-bold text-white">
-                <th className="px-2 py-1 text-left">#</th>
-                <th className="px-2 py-1 text-right">
+              <tr
+                className="print-header-bg bg-[#FE6100] font-bold text-white"
+                style={{ backgroundColor: '#FE6100', color: 'white' }}
+              >
+                <td
+                  className="px-2 py-1 text-left"
+                  style={{
+                    backgroundColor: '#FE6100',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  #
+                </td>
+                <td
+                  className="px-2 py-1 text-right"
+                  style={{
+                    backgroundColor: '#FE6100',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Valor
-                </th>
-                <th className="px-2 py-1 text-left">
+                </td>
+                <td
+                  className="px-2 py-1 text-left"
+                  style={{
+                    backgroundColor: '#FE6100',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Data pgto
-                </th>
-                <th className="px-2 py-1 text-left">
+                </td>
+                <td
+                  className="px-2 py-1 text-left"
+                  style={{
+                    backgroundColor: '#FE6100',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Forma de pagamento
-                </th>
-                <th className="px-2 py-1 text-left">
+                </td>
+                <td
+                  className="px-2 py-1 text-left"
+                  style={{
+                    backgroundColor: '#FE6100',
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
                   Situação
-                </th>
+                </td>
               </tr>
             </thead>
             <tbody>
