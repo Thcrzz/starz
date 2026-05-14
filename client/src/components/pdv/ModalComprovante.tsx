@@ -13,6 +13,7 @@ import {
   buscarDadosComprovante,
   type DadosComprovante,
 } from '@/services/vendasService';
+import { formatMoney } from '@/hooks/useMoneyInput';
 
 interface Props {
   aberto: boolean;
@@ -21,12 +22,6 @@ interface Props {
   tipoOperacao?: 'venda' | 'orcamento';
 }
 
-function formatBRL(v: number): string {
-  return v.toLocaleString('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  });
-}
 
 function formatData(s: string): string {
   // Vem como "YYYY-MM-DD HH:MM:SS" do SQLite (UTC).
@@ -257,16 +252,16 @@ export default function ModalComprovante({
                       {it.descricao_snapshot}
                     </td>
                     <td className="px-2 py-1 text-right">
-                      {formatBRL(it.preco_unitario)}
+                      {formatMoney(it.preco_unitario)}
                     </td>
                     <td className="px-2 py-1 text-right">
                       {it.quantidade}
                     </td>
                     <td className="px-2 py-1 text-right">
-                      {formatBRL(it.desconto_item ?? 0)}
+                      {formatMoney(it.desconto_item ?? 0)}
                     </td>
                     <td className="px-2 py-1 text-right">
-                      {formatBRL(it.total_item)}
+                      {formatMoney(it.total_item)}
                     </td>
                   </tr>
                 );
@@ -283,7 +278,7 @@ export default function ModalComprovante({
                 </td>
                 <td className="px-2 py-1"></td>
                 <td className="px-2 py-1 text-right">
-                  {formatBRL(venda.subtotal)}
+                  {formatMoney(venda.subtotal)}
                 </td>
               </tr>
               {/* Linha TOTAL GERAL — fundo cinza escuro, dentro da tabela */}
@@ -302,7 +297,7 @@ export default function ModalComprovante({
                   className="px-2 py-1.5 text-right text-base"
                   style={{ backgroundColor: '#4a4a4a', color: 'white' }}
                 >
-                  {formatBRL(venda.total)}
+                  {formatMoney(venda.total)}
                 </td>
               </tr>
             </tfoot>
@@ -343,7 +338,7 @@ export default function ModalComprovante({
                   <tr key={l.n} className={`${zebraScreen} ${zebraPrint}`}>
                     <td className="px-2 py-1">{l.n}</td>
                     <td className="px-2 py-1 text-right">
-                      {formatBRL(l.valor)}
+                      {formatMoney(l.valor)}
                     </td>
                     <td className="px-2 py-1">
                       {l.dataPgto}
