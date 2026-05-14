@@ -1,4 +1,5 @@
 import { Button } from '@/components/ui/button';
+import Carrinho from '@/components/pdv/Carrinho';
 
 /**
  * Página de PDV — layout base com duas colunas.
@@ -13,11 +14,9 @@ export default function PDVPage() {
         {/* Carrinho */}
         <section
           id="pdv-carrinho"
-          className="flex min-h-0 flex-1 flex-col rounded-lg border border-border bg-card"
+          className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg border border-border bg-card"
         >
-          <div className="flex flex-1 items-center justify-center p-6 text-sm text-muted-foreground">
-            Carrinho — em construção
-          </div>
+          <Carrinho />
         </section>
 
         {/* Financeiro */}
