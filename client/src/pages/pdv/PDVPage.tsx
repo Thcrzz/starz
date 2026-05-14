@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import Carrinho from '@/components/pdv/Carrinho';
 import SeletorVendedor from '@/components/pdv/SeletorVendedor';
+import SeletorCliente from '@/components/pdv/SeletorCliente';
 
 /**
  * Página de PDV — layout base com duas colunas.
@@ -38,14 +39,7 @@ export default function PDVPage() {
       <aside className="flex w-[380px] flex-shrink-0 flex-col gap-4 overflow-y-auto">
         <SeletorVendedor />
 
-        <section className="rounded-lg border border-border bg-card p-4">
-          <h3 className="mb-2 text-sm font-semibold text-muted-foreground">
-            Identificar Cliente
-          </h3>
-          <div className="rounded-md border border-dashed border-border p-4 text-center text-xs text-muted-foreground">
-            Seleção / cadastro de cliente (em breve)
-          </div>
-        </section>
+        <SeletorCliente />
 
         <section className="flex flex-col gap-2">
           <Button
