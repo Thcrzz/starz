@@ -286,15 +286,22 @@ export default function ModalComprovante({
                   {formatBRL(venda.subtotal)}
                 </td>
               </tr>
-              {/* Linha TOTAL GERAL — fundo laranja, dentro da tabela */}
-              <tr className="print-header-bg bg-[#FE6100] font-bold text-white">
+              {/* Linha TOTAL GERAL — fundo cinza escuro, dentro da tabela */}
+              <tr
+                className="row-total-geral font-bold text-white"
+                style={{ backgroundColor: '#4a4a4a', color: 'white' }}
+              >
                 <td
                   colSpan={5}
                   className="px-2 py-1.5 text-right text-sm"
+                  style={{ backgroundColor: '#4a4a4a', color: 'white' }}
                 >
                   TOTAL GERAL
                 </td>
-                <td className="px-2 py-1.5 text-right text-base">
+                <td
+                  className="px-2 py-1.5 text-right text-base"
+                  style={{ backgroundColor: '#4a4a4a', color: 'white' }}
+                >
                   {formatBRL(venda.total)}
                 </td>
               </tr>
