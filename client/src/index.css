@@ -72,6 +72,20 @@ input[type='number'] {
 }
 
 @media print {
+  /* Força browsers a respeitarem cores de fundo e backgrounds. Mesmo assim o
+     usuário precisa marcar "Gráficos de plano de fundo" no diálogo de impressão. */
+  * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    color-adjust: exact !important;
+  }
+
+  .comprovante-print-wrapper [style*='background'],
+  .comprovante-print-wrapper [class*='bg-'] {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
   /* Oculta tudo */
   body > * {
     display: none !important;

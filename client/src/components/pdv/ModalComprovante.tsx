@@ -403,13 +403,19 @@ export default function ModalComprovante({
 
           {dados && renderComprovante()}
 
-          <DialogFooter className="no-print">
-            <Button variant="ghost" onClick={onFechar}>
-              Fechar
-            </Button>
-            <Button onClick={handleImprimir} disabled={!dados}>
-              <Printer className="mr-1 h-4 w-4" /> Imprimir
-            </Button>
+          <DialogFooter className="no-print flex-col items-stretch gap-2 sm:flex-col sm:items-stretch sm:space-x-0">
+            <div className="flex justify-end gap-2">
+              <Button variant="ghost" onClick={onFechar}>
+                Fechar
+              </Button>
+              <Button onClick={handleImprimir} disabled={!dados}>
+                <Printer className="mr-1 h-4 w-4" /> Imprimir
+              </Button>
+            </div>
+            <p className="text-right text-xs text-muted-foreground">
+              Dica: ative &quot;Gráficos de plano de fundo&quot; no diálogo de
+              impressão para manter as cores
+            </p>
           </DialogFooter>
         </DialogContent>
       </Dialog>
