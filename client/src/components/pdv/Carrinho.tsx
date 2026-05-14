@@ -30,6 +30,7 @@ export default function Carrinho() {
   const atualizarDesconto = usePDVStore((s) => s.atualizarDesconto);
   const removerItem = usePDVStore((s) => s.removerItem);
   const itensCalculados = usePDVStore((s) => s.itensComDescontoDistribuido());
+  const descontoAbs = usePDVStore((s) => s.descontoGeralAbsoluto());
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -211,22 +212,29 @@ export default function Carrinho() {
                 ariaLabel="Desconto geral em reais"
               />
             ) : (
-              <div className="relative">
-                <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
-                  %
-                </span>
-                <Input
-                  type="number"
-                  min={0}
-                  step={1}
-                  max={100}
-                  value={descontoGeral}
-                  onChange={(e) =>
-                    setDescontoGeral(parseNumero(e.target.value))
-                  }
-                  placeholder="0"
-                  className="h-8 w-32 px-2 pr-8 text-right"
-                />
+              <div className="flex flex-col items-end gap-0.5">
+                <div className="relative">
+                  <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted-foreground">
+                    %
+                  </span>
+                  <Input
+                    type="number"
+                    min={0}
+                    step={1}
+                    max={100}
+                    value={descontoGeral}
+                    onChange={(e) =>
+                      setDescontoGeral(parseNumero(e.target.value))
+                    }
+                    placeholder="0"
+                    className="h-8 w-32 px-2 pr-8 text-right"
+                  />
+                </div>
+                {descontoGeral > 0 && descontoAbs > 0 && (
+                  <span className="text-xs text-muted-foreground">
+                    = R$ {formatMoney(descontoAbs)}
+                  </span>
+                )}
               </div>
             )}
           </div>
