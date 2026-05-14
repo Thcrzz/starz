@@ -149,10 +149,16 @@ export default function ModalComprovante({
       <div className="bg-white p-6 text-sm text-gray-900">
         {/* Cabeçalho */}
         <div className="mb-4 flex items-start justify-between gap-6 border-b border-zinc-300 pb-3">
-          <div>
-            <div className="print-orange text-xl font-bold text-[#F97316]">
-              KORTA TERRA
-            </div>
+          <div className="flex flex-col gap-1">
+            <img
+              src="/Logo_Korta_Terra_Primario_Laranja_0,75.png"
+              alt="Korta Terra"
+              style={{
+                height: '60px',
+                maxWidth: '200px',
+                objectFit: 'contain',
+              }}
+            />
             <div className="text-xs text-zinc-600">Sistema STARZ</div>
           </div>
           <div className="text-right text-xs">
@@ -337,7 +343,7 @@ export default function ModalComprovante({
           </table>
         </div>
 
-        {/* Rodapé */}
+        {/* Rodapé — assinatura + Powered by STARZ */}
         <div className="mt-6 border-t border-zinc-300 pt-3 text-xs">
           {venda.retirado_por && (
             <div className="mb-2">
@@ -345,11 +351,20 @@ export default function ModalComprovante({
               {venda.retirado_por}
             </div>
           )}
-          <div className="mt-6 flex flex-col items-center">
-            <div className="w-2/3 border-t border-zinc-700" />
+          <div className="mb-8 mt-16 flex flex-col items-center">
+            <div className="w-3/5 border-t border-zinc-700" />
             <div className="mt-1 text-center text-xs">
               {venda.retirado_por ?? cliente?.nome ?? 'Assinatura'}
             </div>
+          </div>
+
+          <div className="mt-4 flex items-center justify-center gap-2 border-t border-zinc-300 pt-3">
+            <span className="text-xs text-zinc-600">Powered by</span>
+            <img
+              src="/STARZ LOGO Vermelha.png"
+              alt="STARZ"
+              style={{ height: '16px', objectFit: 'contain' }}
+            />
           </div>
         </div>
       </div>

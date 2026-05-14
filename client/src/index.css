@@ -111,6 +111,19 @@ input[type='number'] {
     color: white !important;
   }
 
+  /* Garante que imagens (logos) saiam com as cores originais na impressão */
+  .comprovante-print-wrapper img {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+    background: transparent !important;
+  }
+
+  /* Regra global para impressão de imagens — mantém cores originais */
+  img {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
   /* Oculta botões dentro do modal durante impressão */
   .no-print {
     display: none !important;
