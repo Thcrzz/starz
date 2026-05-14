@@ -273,7 +273,7 @@ export default function ModalComprovante({
                 <td className="px-2 py-1"></td>
                 <td className="px-2 py-1"></td>
                 <td className="px-2 py-1 text-right">SUBTOTAL</td>
-                <td className="px-2 py-1 text-center">
+                <td className="px-2 py-1 text-right">
                   {venda.itens.length}
                 </td>
                 <td className="px-2 py-1"></td>
