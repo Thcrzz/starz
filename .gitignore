@@ -1,0 +1,28 @@
+# Dependências
+node_modules/
+
+# Build
+dist/
+
+# Variáveis de ambiente
+.env
+
+# Banco de dados local
+server/data/starz.db
+server/data/starz.db-journal
+server/data/starz.db-shm
+server/data/starz.db-wal
+
+# Arquivos e XMLs locais
+server/data/files/
+server/data/xmls/
+
+# Logs
+*.log
+npm-debug.log*
+
+# Editor / SO
+.DS_Store
+.vscode/
+.idea/
+Thumbs.db
