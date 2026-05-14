@@ -27,6 +27,7 @@ export default function BuscaProduto() {
   const [modalVariacoes, setModalVariacoes] =
     useState<BuscaProdutoResultado | null>(null);
   const [modalAvulso, setModalAvulso] = useState(false);
+  const [nomeInicialAvulso, setNomeInicialAvulso] = useState<string>('');
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -134,6 +135,20 @@ export default function BuscaProduto() {
                 Nenhum produto encontrado
               </div>
             )}
+            {!carregando && termo.trim().length >= 2 && (
+              <button
+                type="button"
+                onClick={() => {
+                  setNomeInicialAvulso(termo.trim());
+                  setModalAvulso(true);
+                  setAberto(false);
+                }}
+                className="flex w-full items-center gap-2 border-t border-border bg-primary/10 px-3 py-2 text-left text-sm font-medium text-primary transition-colors hover:bg-primary/20"
+              >
+                <Plus className="h-4 w-4" />
+                Criar produto &quot;{termo.trim()}&quot;
+              </button>
+            )}
             {!carregando &&
               resultados.slice(0, 8).map((r) => {
                 const semEstoque =
@@ -211,7 +226,10 @@ export default function BuscaProduto() {
       <Button
         type="button"
         variant="outline"
-        onClick={() => setModalAvulso(true)}
+        onClick={() => {
+          setNomeInicialAvulso('');
+          setModalAvulso(true);
+        }}
         className="flex-shrink-0 gap-1"
       >
         <Plus className="h-4 w-4" />
@@ -230,7 +248,12 @@ export default function BuscaProduto() {
 
       <ModalProdutoAvulso
         aberto={modalAvulso}
-        onFechar={() => setModalAvulso(false)}
+        onFechar={() => {
+          setModalAvulso(false);
+          setNomeInicialAvulso('');
+          setTermo('');
+        }}
+        nomeInicial={nomeInicialAvulso}
       />
     </div>
   );

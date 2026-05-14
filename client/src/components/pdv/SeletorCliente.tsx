@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Search, X } from 'lucide-react';
+import { Plus, Search, X } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,6 +11,7 @@ import {
 } from '@/services/clientesService';
 import { usePDVStore } from '@/store/pdvStore';
 import type { Cliente } from '@/types';
+import ModalCadastroRapidoCliente from './ModalCadastroRapidoCliente';
 
 export default function SeletorCliente() {
   const clienteId = usePDVStore((s) => s.cliente_id);
@@ -24,6 +25,7 @@ export default function SeletorCliente() {
   const [aberto, setAberto] = useState(false);
   const [carregando, setCarregando] = useState(false);
   const [clienteCompleto, setClienteCompleto] = useState<Cliente | null>(null);
+  const [modalCadastro, setModalCadastro] = useState(false);
 
   const wrapperRef = useRef<HTMLDivElement | null>(null);
 
@@ -180,6 +182,19 @@ export default function SeletorCliente() {
                   Nenhum cliente encontrado
                 </div>
               )}
+              {!carregando && termo.trim().length >= 2 && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setAberto(false);
+                    setModalCadastro(true);
+                  }}
+                  className="flex w-full items-center gap-2 border-t border-border bg-primary/10 px-3 py-2 text-left text-sm font-medium text-primary transition-colors hover:bg-primary/20"
+                >
+                  <Plus className="h-4 w-4" />
+                  Criar cliente &quot;{termo.trim()}&quot;
+                </button>
+              )}
               {!carregando &&
                 resultados.map((c) => (
                   <button
@@ -238,6 +253,15 @@ export default function SeletorCliente() {
           placeholder="Nome de quem retirou..."
         />
       </div>
+
+      <ModalCadastroRapidoCliente
+        aberto={modalCadastro}
+        onFechar={() => {
+          setModalCadastro(false);
+          setTermo('');
+        }}
+        nomeInicial={termo.trim()}
+      />
     </section>
   );
 }

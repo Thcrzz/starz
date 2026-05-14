@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import {
   Dialog,
@@ -23,11 +23,16 @@ import { criarProdutoAvulso } from '@/services/produtosService';
 interface Props {
   aberto: boolean;
   onFechar: () => void;
+  nomeInicial?: string;
 }
 
 const unidadesValidas = ['un', 'm', 'kg', 'cx'];
 
-export default function ModalProdutoAvulso({ aberto, onFechar }: Props) {
+export default function ModalProdutoAvulso({
+  aberto,
+  onFechar,
+  nomeInicial,
+}: Props) {
   const adicionarItem = usePDVStore((s) => s.adicionarItem);
 
   const [nome, setNome] = useState('');
@@ -35,6 +40,10 @@ export default function ModalProdutoAvulso({ aberto, onFechar }: Props) {
   const [quantidade, setQuantidade] = useState('1');
   const [unidade, setUnidade] = useState('un');
   const [salvando, setSalvando] = useState(false);
+
+  useEffect(() => {
+    if (aberto) setNome(nomeInicial ?? '');
+  }, [aberto, nomeInicial]);
 
   function resetar() {
     setNome('');
