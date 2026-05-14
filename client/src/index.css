@@ -133,6 +133,20 @@ input[type='number'] {
     text-align: center;
   }
 
+  /* Zebra das tabelas (sobrescreve a regra * { background: white !important }) */
+  .comprovante-print-wrapper .print-row-odd,
+  .comprovante-print-wrapper .print-row-odd * {
+    background-color: #f5f5f5 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  .comprovante-print-wrapper .print-row-even,
+  .comprovante-print-wrapper .print-row-even * {
+    background-color: #ffffff !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
   /* Oculta botões dentro do modal durante impressão */
   .no-print {
     display: none !important;
