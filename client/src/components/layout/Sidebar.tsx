@@ -92,7 +92,11 @@ export default function Sidebar({ colapsada, onToggle }: SidebarProps) {
         )}
       >
         {!colapsada && (
-          <span className="text-2xl font-bold tracking-tight text-primary">STARZ</span>
+          <img
+            src="/Logo_Korta_Terra_Primario_Laranja_0,75.png"
+            alt="Korta Terra"
+            className="h-8 w-auto"
+          />
         )}
         <button
           onClick={onToggle}
@@ -103,7 +107,7 @@ export default function Sidebar({ colapsada, onToggle }: SidebarProps) {
         </button>
       </div>
 
-      <nav className="flex-1 overflow-y-auto py-4">
+      <nav className="flex-1 overflow-y-auto py-4 min-h-0">
         {SECOES.map((secao) => {
           const itensVisiveis = secao.itens.filter((i) => !i.apenasAdmin || ehAdmin);
           if (itensVisiveis.length === 0) return null;
@@ -144,6 +148,13 @@ export default function Sidebar({ colapsada, onToggle }: SidebarProps) {
           );
         })}
       </nav>
+
+      {!colapsada && (
+        <div className="flex items-center justify-center gap-2 border-t border-border px-4 py-3">
+          <span className="text-xs text-muted-foreground">Powered by</span>
+          <img src="/STARZ LOGO Vermelha.png" alt="STARZ" className="h-4 w-auto" />
+        </div>
+      )}
     </aside>
   );
 }
