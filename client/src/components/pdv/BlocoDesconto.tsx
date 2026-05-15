@@ -32,7 +32,7 @@ export default function BlocoDesconto() {
     'h-9 border border-zinc-300 bg-zinc-200 text-black text-right focus-visible:ring-0 focus-visible:ring-offset-0';
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 border-r border-zinc-700/50 px-4">
       <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         Desconto
       </h3>

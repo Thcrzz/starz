@@ -77,7 +77,7 @@ export default function BlocoFinanceiro() {
   const diffArred = Math.round(diferenca * 100) / 100;
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex flex-col gap-2 border-r border-zinc-700/50 px-4">
       <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
         Financeiro
       </h3>

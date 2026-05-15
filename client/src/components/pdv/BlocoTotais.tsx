@@ -21,7 +21,7 @@ export default function BlocoTotais() {
   );
 
   return (
-    <div className="flex flex-col items-end justify-end gap-2 text-right">
+    <div className="flex flex-col items-end justify-end gap-2 px-4 text-right">
       <div className="flex w-full items-baseline justify-between gap-4 text-sm">
         <span className="font-semibold uppercase tracking-wider text-muted-foreground">
           Subtotal:

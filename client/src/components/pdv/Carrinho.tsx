@@ -173,10 +173,11 @@ export default function Carrinho() {
       {/* Bloco horizontal: Financeiro | Desconto | Totais.
          Em VENDA → 3 colunas (Financeiro 1fr | Desconto auto | Totais 1fr).
          Em ORÇAMENTO → 2 colunas (Desconto assume o lado esquerdo, Totais
-         continua à direita). `items-start` mantém o topo dos 3 blocos
-         alinhado independente da altura do conteúdo de cada um. */}
+         continua à direita). `gap-0` permite que o border-r de cada bloco
+         encoste no próximo (cada bloco já tem px-4 interno, então o
+         conteúdo respira); `items-start` alinha o topo. */}
       <div
-        className={`grid items-start gap-6 border-t border-border bg-card/60 px-4 py-4 ${
+        className={`grid items-start gap-0 border-t border-border bg-card/60 py-4 ${
           ehOrcamento
             ? 'grid-cols-[auto_1fr]'
             : 'grid-cols-[1fr_auto_1fr]'
