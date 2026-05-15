@@ -46,7 +46,7 @@ export default function SeletorVendedor() {
   const vendedorAtual = usuarios.find((u) => u.id === vendedorId);
 
   return (
-    <section className="rounded-lg border border-border bg-card p-4">
+    <section className="card-hover rounded-lg border border-border bg-card p-4">
       <h3 className="mb-2 text-sm font-semibold text-muted-foreground">
         Vendedor
       </h3>

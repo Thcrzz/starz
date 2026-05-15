@@ -96,7 +96,7 @@ export default function SeletorCliente() {
   }
 
   return (
-    <section className="rounded-lg border border-border bg-card p-4">
+    <section className="card-hover rounded-lg border border-border bg-card p-4">
       <h3 className="mb-2 text-sm font-semibold text-muted-foreground">
         Cliente
       </h3>

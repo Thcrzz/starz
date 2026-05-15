@@ -102,6 +102,69 @@ kbd,
   border-radius: 9999px !important;
 }
 
+@layer utilities {
+  /* Botão com brilho que atravessa no hover + elevação + glow laranja */
+  .btn-glow {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .btn-glow::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.2),
+      transparent
+    );
+    transition: left 0.6s ease;
+  }
+
+  .btn-glow:hover::before {
+    left: 100%;
+  }
+
+  .btn-glow:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(249, 115, 22, 0.3);
+  }
+
+  /* Card sutil levanta no hover com sombra escura + halo laranja */
+  .card-hover {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 10px 30px rgba(0, 0, 0, 0.5),
+      0 0 20px rgba(249, 115, 22, 0.1);
+  }
+
+  /* Pulse sutil pros spots laranja do BackgroundEffects */
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    50% {
+      transform: scale(1.05);
+      opacity: 0.95;
+    }
+  }
+
+  .animate-pulse-glow {
+    animation: pulse-glow 8s ease-in-out infinite;
+  }
+}
+
 @media print {
   @page {
     margin: 1cm;

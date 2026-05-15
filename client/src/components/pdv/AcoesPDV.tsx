@@ -188,7 +188,7 @@ export default function AcoesPDV() {
     setModalComprovante(true);
   }
 
-  const baseClasses = 'w-full py-6 text-base font-bold text-white';
+  const baseClasses = 'btn-glow w-full py-6 text-base font-bold text-white';
   const desabilitadoClasses = 'disabled:cursor-not-allowed disabled:opacity-50';
 
   return (
