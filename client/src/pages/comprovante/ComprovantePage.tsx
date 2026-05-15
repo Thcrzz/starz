@@ -191,9 +191,18 @@ export default function ComprovantePage() {
       'Atenciosamente,',
       'Korta Terra',
     ].join('\n');
-    const url = `mailto:${encodeURIComponent(
-      emailDest.trim(),
-    )}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+    // O endereço de email vai cru — `user@example.com` é literal no
+    // mailto: e não precisa percent-encoding. Subject e body SIM são
+    // encoded porque podem ter espaços, quebras de linha e caracteres
+    // especiais. Se o usuário não tiver cliente de email padrão, o
+    // browser silenciosamente ignora; mostramos um toast informativo
+    // antes da navegação.
+    const url = `mailto:${emailDest.trim()}?subject=${encodeURIComponent(
+      assunto,
+    )}&body=${encodeURIComponent(corpo)}`;
+    toast.info(
+      'Abrindo seu cliente de email padrão. Se nada acontecer, verifique se há um cliente configurado.',
+    );
     window.location.href = url;
     setEmailOpen(false);
   }
