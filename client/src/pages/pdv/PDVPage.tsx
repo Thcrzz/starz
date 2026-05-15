@@ -16,7 +16,7 @@ export default function PDVPage() {
   const ehOrcamento = tipoOperacao === 'orcamento';
 
   return (
-    <div className="flex h-full w-full gap-4 overflow-hidden bg-background p-4">
+    <div className="flex h-full w-full gap-4 overflow-hidden p-4">
       {/* Coluna esquerda */}
       <div className="flex flex-1 flex-col gap-4 overflow-hidden">
         {/* Carrinho — sempre toma todo o espaço disponível */}
