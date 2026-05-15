@@ -19,7 +19,6 @@ import {
 } from '@/services/vendasService';
 import ModalVendaConcluida from './ModalVendaConcluida';
 import ModalComprovante from './ModalComprovante';
-import ComprovantePrintInvisivel from './ComprovantePrintInvisivel';
 import { formatMoney } from '@/hooks/useMoneyInput';
 
 type Acao = 'simples' | 'imprimir' | 'nfce';
@@ -57,7 +56,6 @@ export default function AcoesPDV() {
   );
   const [modalConcluida, setModalConcluida] = useState(false);
   const [modalComprovante, setModalComprovante] = useState(false);
-  const [printInvisivel, setPrintInvisivel] = useState(false);
 
   const carrinhoVazio = itens.length === 0;
   const carregando = acaoEmAndamento !== null;
@@ -140,11 +138,6 @@ export default function AcoesPDV() {
     setAcaoEmAndamento(acao);
     try {
       const venda = await criarVenda(payload);
-      toast.success(
-        ehOrcamento
-          ? `Orçamento #${venda.numero} registrado com sucesso!`
-          : `Venda #${venda.numero} registrada com sucesso!`,
-      );
 
       // Captura tipo e nome do cliente ANTES de limpar o store
       const nomeCli = clienteNome ?? '';
@@ -154,16 +147,27 @@ export default function AcoesPDV() {
 
       limparCarrinho();
 
+      const rotuloOp = ehOrcamento ? 'Orçamento' : 'Venda';
+      const verboCriado = ehOrcamento ? 'criado' : 'criada';
+      const verboRegistrado = ehOrcamento ? 'registrado' : 'registrada';
+
       if (acao === 'imprimir') {
-        // Mostra o modal de conclusão E dispara impressão automática em
-        // background (componente invisível que monta o comprovante, carrega
-        // dados e chama window.print() sozinho).
-        setModalConcluida(true);
-        setPrintInvisivel(true);
+        // Abre a página dedicada do comprovante em nova aba — usuário pode
+        // imprimir, baixar PDF, WhatsApp ou email de lá.
+        window.open(`/comprovante/${venda.id}`, '_blank');
+        toast.success(
+          `${rotuloOp} #${venda.numero} ${verboCriado} — comprovante aberto em nova aba`,
+        );
       } else if (acao === 'nfce') {
         toast.info('NFC-e será implementada na Fase 3');
+        toast.success(
+          `${rotuloOp} #${venda.numero} ${verboRegistrado} com sucesso!`,
+        );
         setModalConcluida(true);
       } else {
+        toast.success(
+          `${rotuloOp} #${venda.numero} ${verboRegistrado} com sucesso!`,
+        );
         setModalConcluida(true);
       }
     } catch {
@@ -326,14 +330,6 @@ export default function AcoesPDV() {
         tipoOperacao={tipoOpRecibo}
         onFechar={() => setModalComprovante(false)}
       />
-
-      {printInvisivel && (
-        <ComprovantePrintInvisivel
-          vendaId={vendaConcluida?.id ?? null}
-          tipoOperacao={tipoOpRecibo}
-          onCompleto={() => setPrintInvisivel(false)}
-        />
-      )}
     </>
   );
 }
