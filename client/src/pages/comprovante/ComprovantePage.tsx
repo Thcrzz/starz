@@ -80,6 +80,9 @@ export default function ComprovantePage() {
   const [whatsappOpen, setWhatsappOpen] = useState(false);
   const [telefone, setTelefone] = useState('');
 
+  const [emailOpen, setEmailOpen] = useState(false);
+  const [emailDest, setEmailDest] = useState('');
+
   useEffect(() => {
     const id = Number(vendaId);
     if (!Number.isInteger(id) || id <= 0) {
@@ -145,7 +148,47 @@ export default function ComprovantePage() {
   }
 
   function handleEmail() {
-    toast.info('Envio por email em breve');
+    if (!dados) return;
+    setEmailDest(dados.cliente?.email ?? '');
+    setEmailOpen(true);
+  }
+
+  function enviarEmail() {
+    if (!dados) return;
+    // Validação simples: precisa ter @ e um ponto depois (RFC-ish, suficiente
+    // pra evitar typos antes do mailto)
+    const ok = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailDest.trim());
+    if (!ok) {
+      toast.error('Email inválido');
+      return;
+    }
+    const { venda } = dados;
+    const assunto = `Comprovante de ${
+      ehOrcamento ? 'Orçamento' : 'Venda'
+    } #${venda.numero} — Korta Terra`;
+    const corpo = [
+      'Olá!',
+      '',
+      `Segue em anexo o comprovante do seu ${
+        ehOrcamento ? 'orçamento' : 'pedido'
+      } na Korta Terra.`,
+      '',
+      `Número do ${ehOrcamento ? 'orçamento' : 'pedido'}: #${venda.numero}`,
+      `Total: R$ ${formatMoney(venda.total)}`,
+      `Data: ${formatarDataBR(venda.criado_em)}`,
+      '',
+      'Em caso de dúvidas, entre em contato:',
+      'Tel: (15) 3244-2655',
+      'Email: kortaterra@gmail.com',
+      '',
+      'Atenciosamente,',
+      'Korta Terra',
+    ].join('\n');
+    const url = `mailto:${encodeURIComponent(
+      emailDest.trim(),
+    )}?subject=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+    window.location.href = url;
+    setEmailOpen(false);
   }
 
   const ehOrcamento = dados?.venda.tipo_operacao === 'orcamento';
@@ -273,6 +316,45 @@ export default function ComprovantePage() {
               Cancelar
             </Button>
             <Button onClick={enviarWhatsapp}>Abrir WhatsApp</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={emailOpen} onOpenChange={setEmailOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enviar por email</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-start gap-2 border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-primary">
+              <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+              <span>
+                Após abrir o email, clique em &quot;Baixar PDF&quot; e
+                anexe manualmente o arquivo na mensagem.
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="email-dest" className="text-xs">
+                Email do destinatário
+              </Label>
+              <Input
+                id="email-dest"
+                type="email"
+                inputMode="email"
+                value={emailDest}
+                onChange={(e) => setEmailDest(e.target.value)}
+                placeholder="cliente@example.com"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setEmailOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={enviarEmail}>Abrir Email</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
