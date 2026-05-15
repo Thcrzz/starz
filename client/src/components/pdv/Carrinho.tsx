@@ -191,7 +191,10 @@ export default function Carrinho() {
 
       {/* Observação no rodapé do card */}
       <div className="flex flex-col gap-1.5 border-t border-border bg-card/40 px-4 py-3">
-        <Label htmlFor="obs-venda" className="text-xs">
+        <Label
+          htmlFor="obs-venda"
+          className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
+        >
           Observação
         </Label>
         <Textarea
