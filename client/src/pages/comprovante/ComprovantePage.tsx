@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import {
+  AlertTriangle,
   ArrowLeft,
   Download,
   Loader2,
@@ -9,13 +10,54 @@ import {
   Printer,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import ComprovanteContent from '@/components/comprovante/ComprovanteContent';
+import { formatMoney } from '@/hooks/useMoneyInput';
 import {
   buscarDadosComprovante,
   type DadosComprovante,
 } from '@/services/vendasService';
 import { baixarPdfComprovante } from '@/utils/gerarPdfComprovante';
+
+function formatarDataBR(s: string): string {
+  // criado_em vem como "YYYY-MM-DD HH:MM:SS" (SQLite UTC)
+  const d = new Date(s.replace(' ', 'T') + 'Z');
+  if (Number.isNaN(d.getTime())) return s;
+  return d.toLocaleDateString('pt-BR', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
+}
+
+function montarMensagem(
+  dados: DadosComprovante,
+  ehOrcamento: boolean,
+): string {
+  const { venda } = dados;
+  const rotuloOperacao = ehOrcamento ? 'orçamento' : 'venda';
+  const rotuloNumero = ehOrcamento ? 'orçamento' : 'venda';
+  return [
+    `Olá! Segue o comprovante do seu ${rotuloOperacao} na Korta Terra.`,
+    '',
+    `Número do ${rotuloNumero}: #${venda.numero}`,
+    `Total: R$ ${formatMoney(venda.total)}`,
+    `Data: ${formatarDataBR(venda.criado_em)}`,
+    '',
+    'Atenciosamente,',
+    'Korta Terra',
+    'Tel: (15) 3244-2655',
+  ].join('\n');
+}
 
 /**
  * Página dedicada do comprovante — abre numa nova aba quando o usuário
@@ -34,6 +76,9 @@ export default function ComprovantePage() {
   const [dados, setDados] = useState<DadosComprovante | null>(null);
   const [carregando, setCarregando] = useState(true);
   const [erro, setErro] = useState<string | null>(null);
+
+  const [whatsappOpen, setWhatsappOpen] = useState(false);
+  const [telefone, setTelefone] = useState('');
 
   useEffect(() => {
     const id = Number(vendaId);
@@ -77,7 +122,26 @@ export default function ComprovantePage() {
   }
 
   function handleWhatsApp() {
-    toast.info('Envio por WhatsApp em breve');
+    if (!dados) return;
+    setTelefone(dados.cliente?.telefone ?? '');
+    setWhatsappOpen(true);
+  }
+
+  function enviarWhatsapp() {
+    if (!dados) return;
+    const digits = telefone.replace(/\D/g, '');
+    if (digits.length < 10) {
+      toast.error('Número inválido — informe DDD + número (mínimo 10 dígitos)');
+      return;
+    }
+    // Se o usuário não digitou o DDI, prefixa 55 (Brasil)
+    const comDDI =
+      digits.length === 10 || digits.length === 11 ? `55${digits}` : digits;
+
+    const msg = montarMensagem(dados, ehOrcamento);
+    const url = `https://wa.me/${comDDI}?text=${encodeURIComponent(msg)}`;
+    window.open(url, '_blank');
+    setWhatsappOpen(false);
   }
 
   function handleEmail() {
@@ -169,6 +233,49 @@ export default function ComprovantePage() {
           </div>
         )}
       </main>
+
+      <Dialog open={whatsappOpen} onOpenChange={setWhatsappOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enviar por WhatsApp</DialogTitle>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-3">
+            <div className="flex items-start gap-2 border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-primary">
+              <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+              <span>
+                Após abrir o WhatsApp, clique em &quot;Baixar PDF&quot; e
+                anexe manualmente o arquivo na conversa.
+              </span>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+              <Label htmlFor="whatsapp-tel" className="text-xs">
+                Número de telefone
+              </Label>
+              <Input
+                id="whatsapp-tel"
+                type="tel"
+                inputMode="tel"
+                value={telefone}
+                onChange={(e) => setTelefone(e.target.value)}
+                placeholder="(15) 99999-9999"
+              />
+              <span className="text-xs text-muted-foreground">
+                Aceita formatos como (15) 99999-9999, 15999999999 ou
+                +55 15 99999-9999. Se não digitar o DDI, +55 é adicionado.
+              </span>
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => setWhatsappOpen(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={enviarWhatsapp}>Abrir WhatsApp</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
