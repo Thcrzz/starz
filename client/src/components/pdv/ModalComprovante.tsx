@@ -177,6 +177,35 @@ export default function ModalComprovante({
    */
   function renderComprovante() {
     if (!venda || !empresa) return null;
+
+    // Distribui o desconto geral proporcionalmente entre os itens — somente
+    // visual no comprovante (não altera backend nem pdvStore). O último item
+    // absorve o resíduo de arredondamento pra soma bater com venda.desconto.
+    const subtotalItens = venda.itens.reduce(
+      (acc, it) => acc + (it.total_item || 0),
+      0,
+    );
+    const descontoGeral = venda.desconto || 0;
+    const distribuidos: number[] = (() => {
+      if (descontoGeral <= 0 || subtotalItens <= 0) {
+        return venda.itens.map(() => 0);
+      }
+      const valores: number[] = [];
+      let acumulado = 0;
+      venda.itens.forEach((it, idx) => {
+        if (idx === venda.itens.length - 1) {
+          valores.push(Math.max(0, descontoGeral - acumulado));
+        } else {
+          const valor =
+            Math.round((it.total_item / subtotalItens) * descontoGeral * 100) /
+            100;
+          valores.push(valor);
+          acumulado += valor;
+        }
+      });
+      return valores;
+    })();
+
     return (
       <div className="flex min-h-screen flex-col bg-white p-6 text-sm text-gray-900">
         {/* Cabeçalho */}
@@ -268,6 +297,14 @@ export default function ModalComprovante({
             {tituloSecaoItens}
           </div>
           <table className="w-full border-collapse text-xs">
+            <colgroup>
+              <col />
+              <col />
+              <col />
+              <col />
+              <col />
+              <col style={{ width: '90px' }} />
+            </colgroup>
             <thead>
               <tr
                 className="print-header-bg bg-[#FE6100] font-bold text-white"
@@ -354,7 +391,7 @@ export default function ModalComprovante({
                       {it.quantidade}
                     </td>
                     <td className="px-2 py-1 text-right">
-                      {formatMoney(it.desconto_item ?? 0)}
+                      {formatMoney((it.desconto_item ?? 0) + distribuidos[idx])}
                     </td>
                     <td className="px-2 py-1 text-right">
                       {formatMoney(it.total_item)}
@@ -497,7 +534,7 @@ export default function ModalComprovante({
                 return (
                   <tr key={l.n} className={`${zebraScreen} ${zebraPrint}`}>
                     <td className="px-2 py-1">{l.n}</td>
-                    <td className="px-2 py-1 text-right">
+                    <td className="px-2 py-1 text-left">
                       {formatMoney(l.valor)}
                     </td>
                     <td className="px-2 py-1">
@@ -526,7 +563,7 @@ export default function ModalComprovante({
                     Total
                   </td>
                   <td
-                    className="px-2 py-1 text-right"
+                    className="px-2 py-1 text-left"
                     style={{ backgroundColor: '#f5f5f5' }}
                   >
                     {formatMoney(totalPagamentos)}
