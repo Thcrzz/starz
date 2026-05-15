@@ -1,18 +1,5 @@
-import html2pdf from 'html2pdf.js';
-
-/**
- * Opção `pagebreak` existe em runtime do html2pdf.js mas o type.d.ts
- * bundled com o pacote não declara — usamos esse tipo local + cast pra
- * passar a config sem cair em `as any`.
- */
-type PagebreakOption = {
-  pagebreak?: {
-    mode?: Array<'avoid-all' | 'css' | 'legacy'>;
-    before?: string | string[];
-    after?: string | string[];
-    avoid?: string | string[];
-  };
-};
+import html2canvas from 'html2canvas-pro';
+import jsPDF from 'jspdf';
 
 /**
  * Gera e baixa um PDF do conteúdo do comprovante.
@@ -21,14 +8,15 @@ type PagebreakOption = {
  *   `id="comprovante-content"` no ComprovanteContent)
  * @param nomeArquivo nome do arquivo .pdf que será baixado
  *
- * Estratégia: clona o elemento e coloca dentro de um wrapper off-screen
- * com bg branco, color preto, largura A4 (210mm). Isso isola o conteúdo
- * do tema dark da página — sem isso o html2canvas captura cores herdadas
- * (texto branco, fundo escuro) e o PDF sai ilegível.
+ * Estratégia (substitui o html2pdf.js que quebrava em cores oklch()
+ * usadas pelo Tailwind v4): html2canvas-pro renderiza o elemento como
+ * canvas — diferentemente do html2canvas original, suporta as funções
+ * de cor modernas (oklch, color, color-mix). O canvas é convertido em
+ * JPEG e injetado no PDF via jspdf.
  *
- * Config: A4 portrait, sem margem (o wrapper já tem padding 15mm),
- * scale 2x pra render nítido, windowWidth 793 (≈210mm a 96dpi), pagebreak
- * avoid-all pra não quebrar elementos no meio.
+ * Se a imagem couber em 297mm (A4), entra direto em uma página. Se
+ * for maior, particionamos em múltiplas páginas usando offsets
+ * negativos no Y de cada addImage.
  */
 export async function baixarPdfComprovante(
   elementId: string,
@@ -39,46 +27,44 @@ export async function baixarPdfComprovante(
     throw new Error('Elemento do comprovante não encontrado');
   }
 
-  // Clone profundo + wrapper off-screen com cores e dimensões A4 forçadas.
-  const clone = element.cloneNode(true) as HTMLElement;
-  const wrapper = document.createElement('div');
-  wrapper.style.position = 'absolute';
-  wrapper.style.left = '-9999px';
-  wrapper.style.top = '0';
-  wrapper.style.width = '210mm';
-  wrapper.style.backgroundColor = '#ffffff';
-  wrapper.style.color = '#000000';
-  wrapper.style.padding = '15mm';
-  wrapper.appendChild(clone);
-  document.body.appendChild(wrapper);
+  const canvas = await html2canvas(element, {
+    scale: 2,
+    useCORS: true,
+    logging: false,
+    backgroundColor: '#ffffff',
+  });
 
-  try {
-    await html2pdf()
-      .set({
-        margin: 0,
-        filename: nomeArquivo,
-        image: { type: 'jpeg', quality: 0.95 },
-        html2canvas: {
-          scale: 2,
-          useCORS: true,
-          logging: false,
-          backgroundColor: '#ffffff',
-          windowWidth: 793,
-        },
-        jsPDF: {
-          unit: 'mm',
-          format: 'a4',
-          orientation: 'portrait',
-        },
-        // pagebreak existe em runtime mas não no .d.ts do pacote (vide
-        // comment acima)
-        ...({
-          pagebreak: { mode: ['avoid-all', 'css', 'legacy'] },
-        } as PagebreakOption),
-      })
-      .from(wrapper)
-      .save();
-  } finally {
-    document.body.removeChild(wrapper);
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  const pageWidth = 210;
+  const pageHeight = 297;
+  const imgWidth = pageWidth;
+  const imgHeight = (canvas.height * imgWidth) / canvas.width;
+  const imgData = canvas.toDataURL('image/jpeg', 0.95);
+
+  if (imgHeight <= pageHeight) {
+    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+  } else {
+    // Quebra em múltiplas páginas: cada addImage usa o mesmo imgData mas
+    // com Y deslocado pra baixo (negativo) na próxima página, simulando
+    // "rolagem" do conteúdo dentro do A4.
+    let heightLeft = imgHeight;
+    let position = 0;
+
+    pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+    heightLeft -= pageHeight;
+
+    while (heightLeft > 0) {
+      position -= pageHeight;
+      pdf.addPage();
+      pdf.addImage(imgData, 'JPEG', 0, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+    }
   }
+
+  pdf.save(nomeArquivo);
 }
