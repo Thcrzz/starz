@@ -1,9 +1,6 @@
-import { useMemo } from 'react';
 import { Input } from '@/components/ui/input';
 import MoneyInput from '@/components/ui/MoneyInput';
-import { formatMoney } from '@/hooks/useMoneyInput';
 import { usePDVStore } from '@/store/pdvStore';
-import { calcularDescontoAbsoluto } from '@/utils/calculosVenda';
 
 function parseNumero(s: string): number {
   const n = Number(s.replace(',', '.'));
@@ -17,16 +14,10 @@ function parseNumero(s: string): number {
  * com o card escuro.
  */
 export default function BlocoDesconto() {
-  const itens = usePDVStore((s) => s.itens);
   const descontoGeral = usePDVStore((s) => s.desconto_geral);
   const setDescontoGeral = usePDVStore((s) => s.setDescontoGeral);
   const tipoDesconto = usePDVStore((s) => s.tipo_desconto);
   const setTipoDesconto = usePDVStore((s) => s.setTipoDesconto);
-
-  const descontoAbs = useMemo(
-    () => calcularDescontoAbsoluto(itens, descontoGeral, tipoDesconto),
-    [itens, descontoGeral, tipoDesconto],
-  );
 
   const inputBaseCls =
     'h-9 border border-zinc-300 bg-zinc-200 text-black text-right focus-visible:ring-0 focus-visible:ring-offset-0';
@@ -75,27 +66,20 @@ export default function BlocoDesconto() {
           />
         </div>
       ) : (
-        <div className="flex flex-col items-end gap-0.5">
-          <div className="relative">
-            <Input
-              type="number"
-              min={0}
-              step={1}
-              max={100}
-              value={descontoGeral}
-              onChange={(e) => setDescontoGeral(parseNumero(e.target.value))}
-              placeholder="0"
-              className={`${inputBaseCls} pr-7 w-32`}
-            />
-            <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs font-semibold text-black">
-              %
-            </span>
-          </div>
-          {descontoGeral > 0 && descontoAbs > 0 && (
-            <span className="text-xs text-muted-foreground">
-              = R$ {formatMoney(descontoAbs)}
-            </span>
-          )}
+        <div className="relative">
+          <Input
+            type="number"
+            min={0}
+            step={1}
+            max={100}
+            value={descontoGeral}
+            onChange={(e) => setDescontoGeral(parseNumero(e.target.value))}
+            placeholder="0"
+            className={`${inputBaseCls} pr-7 w-32`}
+          />
+          <span className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-xs font-semibold text-black">
+            %
+          </span>
         </div>
       )}
     </div>
