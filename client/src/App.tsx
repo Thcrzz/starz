@@ -7,6 +7,7 @@ import Layout from '@/components/layout/Layout';
 import Login from '@/pages/auth/Login';
 import Placeholder from '@/pages/Placeholder';
 import PDVPage from '@/pages/pdv/PDVPage';
+import ComprovantePage from '@/pages/comprovante/ComprovantePage';
 
 const queryClient = new QueryClient();
 
@@ -17,6 +18,16 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/login" element={<Login />} />
+
+            {/* Comprovante — rota standalone (sem Layout) mas autenticada */}
+            <Route
+              path="/comprovante/:vendaId"
+              element={
+                <ProtectedRoute>
+                  <ComprovantePage />
+                </ProtectedRoute>
+              }
+            />
 
             <Route
               element={
