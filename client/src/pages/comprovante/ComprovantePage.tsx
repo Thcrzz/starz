@@ -208,7 +208,11 @@ export default function ComprovantePage() {
       <header
         className="comprovante-page-header sticky top-0 z-10 border-b border-zinc-800 bg-zinc-900"
       >
-        <div className="relative mx-auto flex max-w-[1200px] items-center justify-between gap-4 px-6 py-4">
+        {/* flex + flex-1 no h1 evita sobreposição: Voltar (esquerda) toma o
+            espaço do seu conteúdo, o título cresce pra preencher o meio
+            (text-center centraliza dentro do espaço alocado) e os 4 botões
+            (direita) também tomam o espaço do conteúdo. */}
+        <div className="mx-auto flex max-w-[1400px] items-center gap-4 px-6 py-4">
           <Button
             variant="ghost"
             size="sm"
@@ -218,7 +222,7 @@ export default function ComprovantePage() {
             <ArrowLeft className="mr-1 h-4 w-4" /> Voltar
           </Button>
 
-          <h1 className="absolute left-1/2 -translate-x-1/2 text-base font-semibold text-white">
+          <h1 className="flex-1 truncate text-center text-base font-semibold text-white">
             {titulo}
           </h1>
 
