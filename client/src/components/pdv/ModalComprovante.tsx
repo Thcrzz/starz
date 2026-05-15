@@ -281,7 +281,7 @@ export default function ModalComprovante({
                     fontWeight: 'bold',
                   }}
                 >
-                  Tipo
+                  #
                 </td>
                 <td
                   className="px-2 py-1 text-left"
@@ -343,9 +343,7 @@ export default function ModalComprovante({
                   idx % 2 === 0 ? 'print-row-even' : 'print-row-odd';
                 return (
                   <tr key={it.id} className={`${zebraScreen} ${zebraPrint}`}>
-                    <td className="px-2 py-1">
-                      {it.e_avulso ? 'Avulso' : 'Produto'}
-                    </td>
+                    <td className="px-2 py-1">{idx + 1}</td>
                     <td className="px-2 py-1">
                       {it.descricao_snapshot}
                     </td>
@@ -449,7 +447,7 @@ export default function ModalComprovante({
                   #
                 </td>
                 <td
-                  className="px-2 py-1 text-right"
+                  className="px-2 py-1 text-left"
                   style={{
                     backgroundColor: '#FE6100',
                     color: 'white',
