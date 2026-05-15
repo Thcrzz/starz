@@ -167,8 +167,15 @@ kbd,
 
 @media print {
   @page {
-    margin: 1cm;
-    size: A4;
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+    height: auto !important;
   }
 
   /* Força impressão de cores em TODOS os elementos */
@@ -195,9 +202,9 @@ kbd,
     width: 100% !important;
     background: white !important;
     color: black !important;
-    /* ComprovanteContent perdeu o p-6 interno na Fase 3F; reaplica aqui
-       pra manter o respiro entre conteúdo e borda do papel impresso */
-    padding: 24px !important;
+    /* @page agora tem margin 0 (Fase 3G G2). Esse 10mm vira a margem
+       efetiva do conteúdo do modal impresso. */
+    padding: 10mm !important;
     margin: 0 !important;
   }
 
@@ -259,21 +266,38 @@ kbd,
     text-align: center;
   }
 
-  /* Página /comprovante/:id — esconde o header escuro e expande o conteúdo
-     pra ocupar a folha inteira. Independente do contexto; só ativa em print
-     quando essas classes existem (apenas na ComprovantePage). */
+  /* Página /comprovante/:id — esconde o header escuro e expande o
+     conteúdo. Quando a folha A4 tem minHeight 297mm na tela, em print
+     precisamos sobrescrever pra "auto" — senão sobra espaço e o
+     browser imprime uma segunda folha em branco. */
   .comprovante-page-header {
     display: none !important;
   }
 
-  .comprovante-page-content {
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    width: 100% !important;
+  .comprovante-page-wrapper {
+    background: white !important;
     padding: 0 !important;
     margin: 0 !important;
+    min-height: 0 !important;
+    height: auto !important;
+  }
+
+  .comprovante-page-content {
+    position: relative !important;
+    width: 100% !important;
+    max-width: 210mm !important;
+    min-height: 0 !important;
+    height: auto !important;
+    padding: 10mm !important;
+    margin: 0 !important;
     box-shadow: none !important;
+    overflow: hidden !important;
+    page-break-after: avoid !important;
+    page-break-inside: avoid !important;
+  }
+
+  .comprovante-page-content > * {
+    page-break-inside: avoid !important;
   }
 
   body {

@@ -213,7 +213,7 @@ export default function ComprovantePage() {
     : 'Comprovante';
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="comprovante-page-wrapper min-h-screen bg-background">
       <header
         className="comprovante-page-header sticky top-0 z-10 border-b border-zinc-800 bg-zinc-900"
       >
