@@ -11,10 +11,13 @@ import {
   Megaphone,
   TrendingUp,
   Settings,
+  ChevronLeft,
+  ChevronRight,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuthStore } from '@/store/authStore';
+import { useUIStore } from '@/store/uiStore';
 
 type ItemMenu = {
   rotulo: string;
@@ -69,17 +72,29 @@ const SECOES: Secao[] = [
 
 /**
  * Sidebar fixa à esquerda começando logo abaixo da Topbar (top-20).
- * Glass effect (mesmo blur+saturate da Topbar), border direita sutil,
- * hover translada o item levemente pra direita e item ativo ganha
- * borda esquerda laranja + fundo primary/10.
+ * Glass effect, hover translada o item levemente, item ativo com borda
+ * laranja à esquerda.
+ *
+ * Colapso (via useUIStore.sidebarColapsada):
+ * - Expandida: w-60, todos os labels visíveis, "Powered by STARZ" no rodapé.
+ * - Colapsada: w-16, só ícones; títulos de seção, labels dos itens e o
+ *   rodapé Powered by ficam escondidos.
+ *
+ * O toggle fica logo acima do rodapé Powered by e mostra "Recolher" (com
+ * ChevronLeft) quando expandida e só o ChevronRight quando colapsada.
  */
 export default function Sidebar() {
   const usuario = useAuthStore((s) => s.usuario);
   const ehAdmin = usuario?.perfil === 'admin';
+  const colapsada = useUIStore((s) => s.sidebarColapsada);
+  const alternar = useUIStore((s) => s.alternarSidebar);
 
   return (
     <aside
-      className="fixed left-0 top-20 z-40 flex h-[calc(100vh-5rem)] w-60 flex-col border-r"
+      className={cn(
+        'fixed left-0 top-20 z-40 flex h-[calc(100vh-5rem)] flex-col border-r transition-[width] duration-200',
+        colapsada ? 'w-16' : 'w-60',
+      )}
       style={{
         borderColor: 'rgba(255, 255, 255, 0.08)',
         backgroundColor: 'rgba(255, 255, 255, 0.03)',
@@ -97,9 +112,11 @@ export default function Sidebar() {
 
           return (
             <div key={secao.titulo} className="mb-4">
-              <div className="px-4 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {secao.titulo}
-              </div>
+              {!colapsada && (
+                <div className="px-4 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  {secao.titulo}
+                </div>
+              )}
               <ul className="space-y-0.5 px-2">
                 {itensVisiveis.map((item) => {
                   const Icone = item.icone;
@@ -107,9 +124,11 @@ export default function Sidebar() {
                     <li key={item.rota}>
                       <NavLink
                         to={item.rota}
+                        title={colapsada ? item.rotulo : undefined}
                         className={({ isActive }) =>
                           cn(
                             'flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:translate-x-1 hover:bg-white/5',
+                            colapsada && 'justify-center px-2',
                             isActive
                               ? 'border-l-2 border-primary bg-primary/10 text-primary'
                               : 'text-muted-foreground hover:text-foreground',
@@ -117,7 +136,7 @@ export default function Sidebar() {
                         }
                       >
                         <Icone className="h-4 w-4 shrink-0" />
-                        <span>{item.rotulo}</span>
+                        {!colapsada && <span>{item.rotulo}</span>}
                       </NavLink>
                     </li>
                   );
@@ -128,13 +147,35 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div
-        className="flex items-center justify-center gap-2 border-t px-4 py-3"
+      <button
+        type="button"
+        onClick={alternar}
+        aria-label={colapsada ? 'Expandir menu' : 'Recolher menu'}
+        className={cn(
+          'flex items-center gap-2 border-t py-2 text-sm text-muted-foreground transition-colors hover:bg-white/5 hover:text-foreground',
+          colapsada ? 'justify-center px-2' : 'px-4',
+        )}
         style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}
       >
-        <span className="text-xs text-muted-foreground">Powered by</span>
-        <img src="/STARZ LOGO Vermelha.png" alt="STARZ" className="h-4 w-auto" />
-      </div>
+        {colapsada ? (
+          <ChevronRight className="h-4 w-4" />
+        ) : (
+          <>
+            <ChevronLeft className="h-4 w-4" />
+            <span>Recolher</span>
+          </>
+        )}
+      </button>
+
+      {!colapsada && (
+        <div
+          className="flex items-center justify-center gap-2 border-t px-4 py-3"
+          style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}
+        >
+          <span className="text-xs text-muted-foreground">Powered by</span>
+          <img src="/STARZ LOGO Vermelha.png" alt="STARZ" className="h-4 w-auto" />
+        </div>
+      )}
     </aside>
   );
 }

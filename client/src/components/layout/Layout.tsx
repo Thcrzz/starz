@@ -2,6 +2,7 @@ import { Outlet, useLocation } from 'react-router-dom';
 import BackgroundEffects from './BackgroundEffects';
 import Sidebar from './Sidebar';
 import Topbar from './Topbar';
+import { useUIStore } from '@/store/uiStore';
 
 /**
  * Layout principal. BackgroundEffects atrás de tudo (z-0), Topbar fixa no
@@ -12,9 +13,12 @@ import Topbar from './Topbar';
  *          interna usa flex-1 + overflow-hidden pra deixar PDVPage usar
  *          h-full sem que o sistema role.
  * - outras rotas → min-h-screen normal (cresce com o conteúdo).
+ *
+ * Margem-esquerda do main acompanha o colapso da Sidebar (ml-60 / ml-16).
  */
 export default function Layout() {
   const isPdv = useLocation().pathname === '/pdv';
+  const colapsada = useUIStore((s) => s.sidebarColapsada);
 
   return (
     <div className="relative min-h-screen text-foreground">
@@ -23,7 +27,9 @@ export default function Layout() {
       <Sidebar />
 
       <main
-        className={`relative z-10 ml-60 pt-20 ${
+        className={`relative z-10 pt-20 transition-[margin] duration-200 ${
+          colapsada ? 'ml-16' : 'ml-60'
+        } ${
           isPdv
             ? 'flex h-screen flex-col overflow-hidden'
             : 'min-h-screen'
