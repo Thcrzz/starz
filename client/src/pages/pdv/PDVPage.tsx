@@ -1,6 +1,7 @@
 import Carrinho from '@/components/pdv/Carrinho';
 import SeletorVendedor from '@/components/pdv/SeletorVendedor';
 import SeletorCliente from '@/components/pdv/SeletorCliente';
+import Observacoes from '@/components/pdv/Observacoes';
 import AcoesPDV from '@/components/pdv/AcoesPDV';
 import SeletorTipoOperacao from '@/components/pdv/SeletorTipoOperacao';
 
@@ -26,6 +27,7 @@ export default function PDVPage() {
         <SeletorTipoOperacao />
         <SeletorVendedor />
         <SeletorCliente />
+        <Observacoes />
         <AcoesPDV />
       </aside>
     </div>

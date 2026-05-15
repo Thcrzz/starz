@@ -1,8 +1,6 @@
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import MoneyInput from '@/components/ui/MoneyInput';
 import { formatMoney } from '@/hooks/useMoneyInput';
 import { usePDVStore } from '@/store/pdvStore';
@@ -31,8 +29,6 @@ const CELL_INPUT =
 
 export default function Carrinho() {
   const itens = usePDVStore((s) => s.itens);
-  const observacao = usePDVStore((s) => s.observacao) ?? '';
-  const setObservacao = usePDVStore((s) => s.setObservacao);
   const tipoOperacao = usePDVStore((s) => s.tipo_operacao);
   const atualizarQuantidade = usePDVStore((s) => s.atualizarQuantidade);
   const atualizarPreco = usePDVStore((s) => s.atualizarPreco);
@@ -189,24 +185,6 @@ export default function Carrinho() {
         {!ehOrcamento && <BlocoFinanceiro />}
         <BlocoDesconto />
         <BlocoTotais />
-      </div>
-
-      {/* Observação no rodapé do card */}
-      <div className="flex flex-col gap-1.5 border-t border-border bg-card/40 px-4 py-3">
-        <Label
-          htmlFor="obs-venda"
-          className="text-xs font-semibold uppercase tracking-wider text-muted-foreground"
-        >
-          Observação
-        </Label>
-        <Textarea
-          id="obs-venda"
-          value={observacao}
-          onChange={(e) => setObservacao(e.target.value)}
-          placeholder="Observação (opcional)..."
-          rows={2}
-          className="min-h-0"
-        />
       </div>
     </div>
   );
