@@ -1,9 +1,14 @@
+import { useMemo } from 'react';
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import MoneyInput from '@/components/ui/MoneyInput';
 import { formatMoney } from '@/hooks/useMoneyInput';
 import { usePDVStore } from '@/store/pdvStore';
+import {
+  calcularDescontoAbsoluto,
+  distribuirDescontoGeral,
+} from '@/utils/calculosVenda';
 import BlocoDesconto from './BlocoDesconto';
 import BlocoFinanceiro from './BlocoFinanceiro';
 import BlocoTotais from './BlocoTotais';
@@ -29,13 +34,27 @@ const CELL_INPUT =
 
 export default function Carrinho() {
   const itens = usePDVStore((s) => s.itens);
+  const subtotal = usePDVStore((s) => s.subtotal());
+  const descontoGeral = usePDVStore((s) => s.desconto_geral);
+  const tipoDesconto = usePDVStore((s) => s.tipo_desconto);
   const tipoOperacao = usePDVStore((s) => s.tipo_operacao);
   const atualizarQuantidade = usePDVStore((s) => s.atualizarQuantidade);
   const atualizarPreco = usePDVStore((s) => s.atualizarPreco);
-  const atualizarDesconto = usePDVStore((s) => s.atualizarDesconto);
   const removerItem = usePDVStore((s) => s.removerItem);
 
   const ehOrcamento = tipoOperacao === 'orcamento';
+
+  // Desconto geral em R$ (resolve % → R$ quando aplicável) e distribuição
+  // proporcional entre itens — useMemo evita criar arrays novos em cada
+  // render e o consequente loop de re-render que tivemos na Fase 2.
+  const descontoGeralReais = useMemo(
+    () => calcularDescontoAbsoluto(itens, descontoGeral, tipoDesconto),
+    [itens, descontoGeral, tipoDesconto],
+  );
+  const distribuidos = useMemo(
+    () => distribuirDescontoGeral(itens, subtotal, descontoGeralReais),
+    [itens, subtotal, descontoGeralReais],
+  );
 
   return (
     <div className="flex h-full min-h-0 flex-col">
@@ -131,20 +150,18 @@ export default function Carrinho() {
                     className={`${CELL_INPUT} w-full px-2 text-right`}
                   />
 
-                  <div className="relative">
-                    {item.desconto_item > 0 && (
-                      <span className="pointer-events-none absolute left-2 top-1/2 z-10 -translate-y-1/2 text-sm text-black">
-                        -
-                      </span>
-                    )}
-                    <MoneyInput
-                      value={item.desconto_item}
-                      onChange={(v) => atualizarDesconto(item.id, v)}
-                      className={`${CELL_INPUT} ${
-                        item.desconto_item > 0 ? 'pl-5' : ''
-                      }`}
-                      ariaLabel="Desconto do item"
-                    />
+                  {/* Desconto combinado (item.desconto_item + rateio do geral)
+                      — exibição apenas. Edição direta foi removida porque o
+                      cálculo da distribuição depende do total_item, que muda
+                      junto com o desconto_item, criando "saltos" no número. */}
+                  <div className="text-right text-sm text-white">
+                    {(() => {
+                      const combinado =
+                        item.desconto_item + (distribuidos[idx] ?? 0);
+                      return combinado > 0
+                        ? `-${formatMoney(combinado)}`
+                        : formatMoney(0);
+                    })()}
                   </div>
 
                   <div className="text-right text-sm font-bold text-white">

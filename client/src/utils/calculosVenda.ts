@@ -18,3 +18,40 @@ export function calcularDescontoAbsoluto(
   }
   return Math.min(subtotal, Math.max(0, descontoGeral));
 }
+
+/**
+ * Rateia proporcionalmente o desconto geral (em R$) entre os itens. Retorna
+ * um array do mesmo tamanho com o valor distribuído pra cada item — sem
+ * somar com o desconto_item original; quem combinar é o caller.
+ *
+ * O último item absorve o resíduo de arredondamento (2 casas) pra garantir
+ * que a soma do array bata exatamente com `descontoGeralReais`.
+ *
+ * NOTA: o resultado é apenas visual — o pdvStore continua armazenando o
+ * desconto_item original e o desconto_geral separados (decisão da Fase 2:
+ * backend é a fonte da verdade do total). Consumir via useMemo no componente
+ * pra evitar criar arrays novos em cada render.
+ */
+export function distribuirDescontoGeral(
+  itens: ItemCarrinho[],
+  subtotal: number,
+  descontoGeralReais: number,
+): number[] {
+  if (descontoGeralReais <= 0 || subtotal <= 0) {
+    return itens.map(() => 0);
+  }
+  const valores: number[] = [];
+  let acumulado = 0;
+  itens.forEach((it, idx) => {
+    if (idx === itens.length - 1) {
+      valores.push(Math.max(0, descontoGeralReais - acumulado));
+    } else {
+      const valor =
+        Math.round((it.total_item / subtotal) * descontoGeralReais * 100) /
+        100;
+      valores.push(valor);
+      acumulado += valor;
+    }
+  });
+  return valores;
+}
