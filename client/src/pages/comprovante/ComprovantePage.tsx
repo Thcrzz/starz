@@ -191,19 +191,14 @@ export default function ComprovantePage() {
       'Atenciosamente,',
       'Korta Terra',
     ].join('\n');
-    // O endereço de email vai cru — `user@example.com` é literal no
-    // mailto: e não precisa percent-encoding. Subject e body SIM são
-    // encoded porque podem ter espaços, quebras de linha e caracteres
-    // especiais. Se o usuário não tiver cliente de email padrão, o
-    // browser silenciosamente ignora; mostramos um toast informativo
-    // antes da navegação.
-    const url = `mailto:${emailDest.trim()}?subject=${encodeURIComponent(
-      assunto,
-    )}&body=${encodeURIComponent(corpo)}`;
-    toast.info(
-      'Abrindo seu cliente de email padrão. Se nada acontecer, verifique se há um cliente configurado.',
-    );
-    window.location.href = url;
+    // Abre o Gmail Web em nova aba com `to`, `su` (subject) e `body`
+    // pré-preenchidos via query string — independente de cliente de
+    // email instalado na máquina. Se o usuário não estiver logado no
+    // Gmail, o próprio Google redireciona pro login antes.
+    const url = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(
+      emailDest.trim(),
+    )}&su=${encodeURIComponent(assunto)}&body=${encodeURIComponent(corpo)}`;
+    window.open(url, '_blank');
     setEmailOpen(false);
   }
 
@@ -368,8 +363,9 @@ export default function ComprovantePage() {
             <div className="flex items-start gap-2 border border-primary/40 bg-primary/10 px-3 py-2 text-xs text-primary">
               <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
               <span>
-                Após abrir o email, clique em &quot;Baixar PDF&quot; e
-                anexe manualmente o arquivo na mensagem.
+                O Gmail Web abrirá em uma nova aba. Depois, clique em
+                &quot;Baixar PDF&quot; aqui e anexe manualmente o
+                arquivo na mensagem.
               </span>
             </div>
 
@@ -392,7 +388,7 @@ export default function ComprovantePage() {
             <Button variant="ghost" onClick={() => setEmailOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={enviarEmail}>Abrir Email</Button>
+            <Button onClick={enviarEmail}>Abrir Gmail</Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
