@@ -11,18 +11,6 @@ export interface ItemCarrinho {
   unidade: string;
 }
 
-/**
- * Item do carrinho com o desconto geral já rateado proporcionalmente.
- * `desconto_distribuido` = parcela do desconto_geral que tocou neste item.
- * `desconto_item_final` = desconto_item + desconto_distribuido.
- * `total_item_final` = preco_unitario * quantidade - desconto_item_final.
- */
-export interface ItemCarrinhoCalculado extends ItemCarrinho {
-  desconto_distribuido: number;
-  desconto_item_final: number;
-  total_item_final: number;
-}
-
 export interface BuscaProdutoResultado {
   id: number;
   produto_id?: number;

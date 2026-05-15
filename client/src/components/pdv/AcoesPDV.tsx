@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
-import {
-  calcularDescontoAbsoluto,
-  distribuirDesconto,
-} from '@/utils/calculosVenda';
+import { calcularDescontoAbsoluto } from '@/utils/calculosVenda';
 import {
   Dialog,
   DialogContent,
@@ -107,15 +104,9 @@ export default function AcoesPDV() {
   }
 
   async function executarVenda(acao: Acao) {
-    // Distribui o desconto geral proporcionalmente nos itens antes de salvar.
-    // A tabela vendas continua guardando o desconto_geral em `desconto`, e
-    // itens_venda recebe `desconto_item` já com o rateio incluído.
-    const itensRateados = distribuirDesconto(
-      itens,
-      descontoGeralBruto,
-      tipoDesconto,
-    );
-
+    // Backend calcula total = subtotal - desconto. Itens vão crus, com apenas
+    // o desconto_item individual; o desconto geral fica no campo `desconto`
+    // da venda (não é rateado nos itens).
     const formaPrincipal = pagamentos[0]?.forma ?? formaPagamento ?? null;
     const temFiado = pagamentos.some((p) => p.forma === 'fiado');
 
@@ -134,14 +125,14 @@ export default function AcoesPDV() {
         valor: p.valor,
         parcelas: p.parcelas,
       })),
-      itens: itensRateados.map((i) => ({
+      itens: itens.map((i) => ({
         variacao_id: i.variacao_id,
         descricao_snapshot: i.descricao,
         preco_unitario: i.preco_unitario,
         preco_original: i.preco_original,
         quantidade: i.quantidade,
-        desconto_item: i.desconto_item_final,
-        total_item: i.total_item_final,
+        desconto_item: i.desconto_item,
+        total_item: i.total_item,
         e_avulso: i.e_avulso,
       })),
     };

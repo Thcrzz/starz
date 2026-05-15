@@ -5,10 +5,7 @@ import { Input } from '@/components/ui/input';
 import MoneyInput from '@/components/ui/MoneyInput';
 import { formatMoney } from '@/hooks/useMoneyInput';
 import { usePDVStore } from '@/store/pdvStore';
-import {
-  calcularDescontoAbsoluto,
-  distribuirDesconto,
-} from '@/utils/calculosVenda';
+import { calcularDescontoAbsoluto } from '@/utils/calculosVenda';
 import BuscaProduto from './BuscaProduto';
 
 function parseNumero(s: string): number {
@@ -36,12 +33,6 @@ export default function Carrinho() {
   const atualizarDesconto = usePDVStore((s) => s.atualizarDesconto);
   const removerItem = usePDVStore((s) => s.removerItem);
 
-  // Memoiza o rateio do desconto. Cálculo puro (sem efeitos colaterais),
-  // recalcula apenas quando itens / desconto / tipo mudam.
-  const itensCalculados = useMemo(
-    () => distribuirDesconto(itens, descontoGeral, tipoDesconto),
-    [itens, descontoGeral, tipoDesconto],
-  );
   const descontoAbs = useMemo(
     () => calcularDescontoAbsoluto(itens, descontoGeral, tipoDesconto),
     [itens, descontoGeral, tipoDesconto],
@@ -94,9 +85,6 @@ export default function Carrinho() {
               const passoQtd =
                 item.unidade === 'm' || item.unidade === 'kg' ? 0.001 : 1;
               const fundo = idx % 2 === 0 ? 'bg-card' : 'bg-secondary/30';
-              const distribuido =
-                itensCalculados.find((c) => c.id === item.id)
-                  ?.desconto_distribuido ?? 0;
               return (
                 <div
                   key={item.id}
@@ -151,19 +139,12 @@ export default function Carrinho() {
                   </div>
 
                   {/* Desconto por item — com máscara monetária */}
-                  <div className="flex flex-col gap-0.5">
-                    <MoneyInput
-                      value={item.desconto_item}
-                      onChange={(v) => atualizarDesconto(item.id, v)}
-                      className="h-8"
-                      ariaLabel="Desconto do item"
-                    />
-                    {distribuido > 0.005 && (
-                      <span className="text-right text-xs text-muted-foreground">
-                        + {formatMoney(distribuido)} (rateio)
-                      </span>
-                    )}
-                  </div>
+                  <MoneyInput
+                    value={item.desconto_item}
+                    onChange={(v) => atualizarDesconto(item.id, v)}
+                    className="h-8"
+                    ariaLabel="Desconto do item"
+                  />
 
                   {/* Total */}
                   <div className="text-center font-semibold text-white">
