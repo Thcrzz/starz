@@ -195,7 +195,9 @@ kbd,
     width: 100% !important;
     background: white !important;
     color: black !important;
-    padding: 0 !important;
+    /* ComprovanteContent perdeu o p-6 interno na Fase 3F; reaplica aqui
+       pra manter o respiro entre conteúdo e borda do papel impresso */
+    padding: 24px !important;
     margin: 0 !important;
   }
 

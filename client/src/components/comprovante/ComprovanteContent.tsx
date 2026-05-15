@@ -125,9 +125,13 @@ export default function ComprovanteContent({
   })();
 
   return (
+    // Container "neutro": sem padding/min-height próprios — quem usa decide.
+    // ModalComprovante envolve com p-6; ComprovantePage envolve com a folha
+    // A4 (210mm × min 297mm com padding 15mm); .comprovante-print-wrapper
+    // (portal de impressão) tem seu próprio padding via CSS.
     <div
       id={id}
-      className="flex min-h-screen flex-col bg-white p-6 text-sm text-gray-900"
+      className="flex flex-col bg-white text-sm text-gray-900"
     >
       {/* Cabeçalho */}
       <div className="mb-4 flex items-start justify-between gap-6 border-b border-zinc-300 pb-3">

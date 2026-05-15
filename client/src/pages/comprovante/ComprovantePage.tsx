@@ -268,7 +268,20 @@ export default function ComprovantePage() {
         )}
 
         {dados && !carregando && (
-          <div className="comprovante-page-content bg-white shadow-2xl">
+          // Folha A4: largura fixa 210mm e altura MÍNIMA 297mm (cresce se
+          // o conteúdo passar). Sombra leve simula o papel sobre o fundo
+          // escuro da página.
+          <div
+            className="comprovante-page-content"
+            style={{
+              width: '210mm',
+              minHeight: '297mm',
+              padding: '15mm',
+              backgroundColor: '#ffffff',
+              boxShadow: '0 4px 24px rgba(0, 0, 0, 0.4)',
+              margin: '20px auto',
+            }}
+          >
             <ComprovanteContent
               dadosComprovante={dados}
               id="comprovante-content"

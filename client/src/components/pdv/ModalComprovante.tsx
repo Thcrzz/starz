@@ -128,7 +128,11 @@ export default function ModalComprovante({
             <div className="py-8 text-center text-sm text-red-500">{erro}</div>
           )}
 
-          {dados && <ComprovanteContent dadosComprovante={dados} />}
+          {dados && (
+            <div className="bg-white p-6">
+              <ComprovanteContent dadosComprovante={dados} />
+            </div>
+          )}
 
           <DialogFooter className="no-print flex-col items-stretch gap-2 sm:flex-col sm:items-stretch sm:space-x-0">
             <div className="flex justify-end gap-2">
