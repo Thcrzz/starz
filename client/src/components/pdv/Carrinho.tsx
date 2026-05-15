@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { AlertTriangle, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
 import MoneyInput from '@/components/ui/MoneyInput';
+import NumberInput from '@/components/ui/NumberInput';
 import { formatMoney } from '@/hooks/useMoneyInput';
 import { usePDVStore } from '@/store/pdvStore';
 import {
@@ -13,11 +13,6 @@ import BlocoDesconto from './BlocoDesconto';
 import BlocoFinanceiro from './BlocoFinanceiro';
 import BlocoTotais from './BlocoTotais';
 import BuscaProduto from './BuscaProduto';
-
-function parseNumero(s: string): number {
-  const n = Number(s.replace(',', '.'));
-  return Number.isFinite(n) ? n : 0;
-}
 
 /**
  * Grid das colunas da tabela do carrinho. Cabeçalho e linhas usam o mesmo
@@ -139,14 +134,11 @@ export default function Carrinho() {
                     )}
                   </div>
 
-                  <Input
-                    type="number"
+                  <NumberInput
                     min={0.001}
                     step={passoQtd}
                     value={item.quantidade}
-                    onChange={(e) =>
-                      atualizarQuantidade(item.id, parseNumero(e.target.value))
-                    }
+                    onChange={(v) => atualizarQuantidade(item.id, v)}
                     className={`${CELL_INPUT} w-full px-2 text-right`}
                   />
 

@@ -1,11 +1,6 @@
-import { Input } from '@/components/ui/input';
 import MoneyInput from '@/components/ui/MoneyInput';
+import NumberInput from '@/components/ui/NumberInput';
 import { usePDVStore } from '@/store/pdvStore';
-
-function parseNumero(s: string): number {
-  const n = Number(s.replace(',', '.'));
-  return Number.isFinite(n) ? n : 0;
-}
 
 /**
  * Coluna central do bloco horizontal — toggle R$/% e o input do valor.
@@ -67,13 +62,12 @@ export default function BlocoDesconto() {
         </div>
       ) : (
         <div className="relative">
-          <Input
-            type="number"
+          <NumberInput
             min={0}
             step={1}
             max={100}
             value={descontoGeral}
-            onChange={(e) => setDescontoGeral(parseNumero(e.target.value))}
+            onChange={setDescontoGeral}
             placeholder="0"
             className={`${inputBaseCls} pr-7 w-32`}
           />
