@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { AlertTriangle, ShoppingCart, Trash2 } from 'lucide-react';
+import { AlertTriangle, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import MoneyInput from '@/components/ui/MoneyInput';
@@ -14,11 +14,18 @@ function parseNumero(s: string): number {
 }
 
 /**
- * Layout das colunas do carrinho — usado em cabeçalho e linhas para garantir alinhamento.
- * Produto: flex-1 | QTD: 70px | Preço Unit.: 110px | Desconto: 100px | Total: 110px | Ações: 36px
- * Colunas numéricas próximas (gap-x-2) pra dar espaço pra descrição.
+ * Grid das colunas da tabela do carrinho. Mantido em uma única constante pra
+ * cabeçalho e linhas casarem perfeitamente:
+ * # 50px | Produto 1fr | Valor Unit. 110px | Quant. 80px | Desconto 100px |
+ * Total 110px | 🗑 40px
  */
-const GRID_COLS = 'grid-cols-[1fr_70px_110px_100px_110px_36px]';
+const GRID_COLS =
+  'grid-cols-[50px_1fr_110px_80px_100px_110px_40px]';
+
+/** Estilo aplicado aos inputs editáveis dentro de cada linha — fundo claro,
+ * texto preto e borda fina pra contrastar com o cinza da linha. */
+const CELL_INPUT =
+  'h-8 border border-zinc-300 bg-zinc-200 text-black focus-visible:ring-0 focus-visible:ring-offset-0';
 
 export default function Carrinho() {
   const itens = usePDVStore((s) => s.itens);
@@ -40,7 +47,7 @@ export default function Carrinho() {
 
   return (
     <div className="flex h-full min-h-0 flex-col">
-      {/* Cabeçalho */}
+      {/* Cabeçalho do card */}
       <div className="flex items-center justify-between border-b border-border px-4 py-3">
         <div className="flex items-center gap-2">
           <h2 className="text-base font-semibold">Carrinho</h2>
@@ -55,42 +62,47 @@ export default function Carrinho() {
         <BuscaProduto />
       </div>
 
-      {/* Lista */}
-      <div className="flex-1 overflow-auto">
-        {itens.length === 0 ? (
-          <div className="flex h-full flex-col items-center justify-center gap-2 p-8 text-center">
-            <ShoppingCart className="h-10 w-10 text-muted-foreground/40" />
-            <p className="text-sm text-muted-foreground">
-              Nenhum produto adicionado
-            </p>
-          </div>
-        ) : (
-          <div className="text-sm">
-            {/* Cabeçalho do grid */}
-            <div
-              className={`sticky top-0 z-10 grid ${GRID_COLS} gap-x-2 border-b border-border bg-card px-3 py-2 text-xs uppercase text-muted-foreground`}
-            >
-              <div className="text-left">Produto</div>
-              <div className="text-center">Qtd</div>
-              <div className="text-center">Preço Unit.</div>
-              <div className="text-center">Desconto</div>
-              <div className="text-center">Total</div>
-              <div></div>
-            </div>
+      {/* Tabela: cabeçalho + área scrollable com linhas */}
+      <div className="flex-1 overflow-hidden">
+        {/* Cabeçalho fixo */}
+        <div
+          className={`grid ${GRID_COLS} gap-x-2 border-b border-border px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground`}
+        >
+          <div className="text-left">#</div>
+          <div className="text-left">Produto</div>
+          <div className="text-right">Valor Unit.</div>
+          <div className="text-right">Quant.</div>
+          <div className="text-right">Desconto</div>
+          <div className="text-right">Total</div>
+          <div></div>
+        </div>
 
-            {/* Linhas */}
-            {itens.map((item, idx) => {
+        {/* Área scrollable. Min 300px com fundo levemente mais claro pra mostrar
+            o espaço disponível mesmo sem itens. */}
+        <div className="min-h-[300px] overflow-y-auto bg-zinc-700/20">
+          {itens.length === 0 ? (
+            <div className="flex h-full min-h-[300px] items-center justify-center px-4 text-center text-sm text-muted-foreground">
+              Adicione produtos usando a busca acima
+            </div>
+          ) : (
+            itens.map((item, idx) => {
               const precoAlterado =
                 item.preco_unitario !== item.preco_original;
               const passoQtd =
                 item.unidade === 'm' || item.unidade === 'kg' ? 0.001 : 1;
-              const fundo = idx % 2 === 0 ? 'bg-card' : 'bg-secondary/30';
+              const fundo =
+                idx % 2 === 0 ? 'bg-zinc-700/40' : 'bg-zinc-700/30';
               return (
                 <div
                   key={item.id}
-                  className={`grid ${GRID_COLS} items-center gap-x-2 border-b border-border px-3 py-2 last:border-b-0 ${fundo}`}
+                  className={`grid ${GRID_COLS} items-center gap-x-2 px-3 py-3 ${fundo}`}
                 >
-                  {/* Produto */}
+                  {/* # — índice em cinza claro */}
+                  <div className="text-left text-sm text-muted-foreground">
+                    {idx + 1}
+                  </div>
+
+                  {/* Produto — nome + (avulso?) + unidade */}
                   <div className="min-w-0">
                     <div className="flex items-center gap-2">
                       <span className="truncate font-medium">
@@ -110,24 +122,12 @@ export default function Carrinho() {
                     </div>
                   </div>
 
-                  {/* Quantidade — input numérico normal (suporta decimais para m/kg) */}
-                  <Input
-                    type="number"
-                    min={0.001}
-                    step={passoQtd}
-                    value={item.quantidade}
-                    onChange={(e) =>
-                      atualizarQuantidade(item.id, parseNumero(e.target.value))
-                    }
-                    className="h-8 w-full px-2 text-center"
-                  />
-
-                  {/* Preço unitário — com máscara monetária */}
+                  {/* Valor unitário */}
                   <div className="relative">
                     <MoneyInput
                       value={item.preco_unitario}
                       onChange={(v) => atualizarPreco(item.id, v)}
-                      className="h-8"
+                      className={CELL_INPUT}
                       ariaLabel="Preço unitário"
                     />
                     {precoAlterado && (
@@ -138,36 +138,57 @@ export default function Carrinho() {
                     )}
                   </div>
 
-                  {/* Desconto por item — com máscara monetária */}
-                  <MoneyInput
-                    value={item.desconto_item}
-                    onChange={(v) => atualizarDesconto(item.id, v)}
-                    className="h-8"
-                    ariaLabel="Desconto do item"
+                  {/* Quantidade — input numérico (decimais p/ m e kg) */}
+                  <Input
+                    type="number"
+                    min={0.001}
+                    step={passoQtd}
+                    value={item.quantidade}
+                    onChange={(e) =>
+                      atualizarQuantidade(item.id, parseNumero(e.target.value))
+                    }
+                    className={`${CELL_INPUT} w-full px-2 text-right`}
                   />
 
-                  {/* Total */}
-                  <div className="text-center font-semibold text-white">
-                    R$ {formatMoney(item.total_item)}
+                  {/* Desconto — internamente positivo, exibe com sinal de menos
+                      como prefixo visual quando > 0. */}
+                  <div className="relative">
+                    {item.desconto_item > 0 && (
+                      <span className="pointer-events-none absolute left-2 top-1/2 z-10 -translate-y-1/2 text-sm text-black">
+                        -
+                      </span>
+                    )}
+                    <MoneyInput
+                      value={item.desconto_item}
+                      onChange={(v) => atualizarDesconto(item.id, v)}
+                      className={`${CELL_INPUT} ${item.desconto_item > 0 ? 'pl-5' : ''}`}
+                      ariaLabel="Desconto do item"
+                    />
                   </div>
 
-                  {/* Ações */}
+                  {/* Total — não editável, bold branco */}
+                  <div className="text-right text-sm font-bold text-white">
+                    {formatMoney(item.total_item)}
+                  </div>
+
+                  {/* Lixeira vermelha */}
                   <button
                     type="button"
                     onClick={() => removerItem(item.id)}
-                    className="flex h-7 w-7 items-center justify-center justify-self-center rounded text-muted-foreground transition-colors hover:text-destructive"
+                    className="flex h-7 w-7 items-center justify-center justify-self-center rounded text-red-500 transition-colors hover:text-red-400"
                     aria-label="Remover item"
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
                 </div>
               );
-            })}
-          </div>
-        )}
+            })
+          )}
+        </div>
       </div>
 
-      {/* Rodapé / totais */}
+      {/* Rodapé: subtotal + desconto + total
+         (será reorganizado em horizontal nos próximos grupos) */}
       <div className="border-t border-border bg-card/60 px-4 py-3">
         <div className="flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Subtotal</span>
@@ -176,7 +197,7 @@ export default function Carrinho() {
         <div className="mt-2 flex items-center justify-between text-sm">
           <span className="text-muted-foreground">Desconto geral</span>
           <div className="flex items-center gap-2">
-            <div className="flex overflow-hidden rounded-md border border-border">
+            <div className="flex overflow-hidden border border-border">
               <button
                 type="button"
                 onClick={() => setTipoDesconto('valor')}
