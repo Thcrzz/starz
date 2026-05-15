@@ -300,10 +300,10 @@ export default function ModalComprovante({
             <colgroup>
               <col />
               <col />
-              <col />
-              <col />
-              <col />
-              <col style={{ width: '90px' }} />
+              <col style={{ width: '100px' }} />
+              <col style={{ width: '100px' }} />
+              <col style={{ width: '100px' }} />
+              <col style={{ width: '100px' }} />
             </colgroup>
             <thead>
               <tr
@@ -331,7 +331,7 @@ export default function ModalComprovante({
                   Descrição
                 </td>
                 <td
-                  className="px-2 py-1 text-right"
+                  className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap"
                   style={{
                     backgroundColor: '#FE6100',
                     color: 'white',
@@ -341,7 +341,7 @@ export default function ModalComprovante({
                   Preço Unit.
                 </td>
                 <td
-                  className="px-2 py-1 text-right"
+                  className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap"
                   style={{
                     backgroundColor: '#FE6100',
                     color: 'white',
@@ -351,7 +351,7 @@ export default function ModalComprovante({
                   Quant.
                 </td>
                 <td
-                  className="px-2 py-1 text-right"
+                  className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap"
                   style={{
                     backgroundColor: '#FE6100',
                     color: 'white',
@@ -361,7 +361,7 @@ export default function ModalComprovante({
                   Desconto
                 </td>
                 <td
-                  className="px-2 py-1 text-right"
+                  className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap"
                   style={{
                     backgroundColor: '#FE6100',
                     color: 'white',
@@ -384,16 +384,16 @@ export default function ModalComprovante({
                     <td className="px-2 py-1">
                       {it.descricao_snapshot}
                     </td>
-                    <td className="px-2 py-1 text-right">
+                    <td className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap">
                       {formatMoney(it.preco_unitario)}
                     </td>
-                    <td className="px-2 py-1 text-right">
+                    <td className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap">
                       {it.quantidade}
                     </td>
-                    <td className="px-2 py-1 text-right">
+                    <td className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap">
                       {formatMoney((it.desconto_item ?? 0) + distribuidos[idx])}
                     </td>
-                    <td className="px-2 py-1 text-right">
+                    <td className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap">
                       {formatMoney(it.total_item)}
                     </td>
                   </tr>
@@ -416,25 +416,25 @@ export default function ModalComprovante({
                   style={{ backgroundColor: '#f5f5f5' }}
                 ></td>
                 <td
-                  className="px-2 py-1 text-right"
+                  className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap"
                   style={{ backgroundColor: '#f5f5f5' }}
                 >
                   SUBTOTAL
                 </td>
                 <td
-                  className="px-2 py-1 text-right"
+                  className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap"
                   style={{ backgroundColor: '#f5f5f5' }}
                 >
-                  {venda.itens.length}
+                  {venda.itens.reduce((acc, it) => acc + (it.quantidade || 0), 0)}
                 </td>
                 <td
-                  className="px-2 py-1 text-right"
+                  className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap"
                   style={{ backgroundColor: '#f5f5f5' }}
                 >
                   {formatMoney(venda.desconto)}
                 </td>
                 <td
-                  className="px-2 py-1 text-right"
+                  className="px-2 py-1 text-right min-w-[100px] whitespace-nowrap"
                   style={{ backgroundColor: '#f5f5f5' }}
                 >
                   {formatMoney(venda.subtotal)}
@@ -453,7 +453,7 @@ export default function ModalComprovante({
                   TOTAL GERAL
                 </td>
                 <td
-                  className="px-2 py-1.5 text-right text-base"
+                  className="px-2 py-1.5 text-right text-base min-w-[100px] whitespace-nowrap"
                   style={{ backgroundColor: '#d4d4d4', color: 'black' }}
                 >
                   {formatMoney(venda.total)}
