@@ -15,6 +15,7 @@ import {
   buscarDadosComprovante,
   type DadosComprovante,
 } from '@/services/vendasService';
+import { baixarPdfComprovante } from '@/utils/gerarPdfComprovante';
 
 /**
  * Página dedicada do comprovante — abre numa nova aba quando o usuário
@@ -63,8 +64,16 @@ export default function ComprovantePage() {
     window.print();
   }
 
-  function handleBaixarPdf() {
-    toast.info('Download de PDF em breve');
+  async function handleBaixarPdf() {
+    if (!dados) return;
+    const tipo = ehOrcamento ? 'orcamento' : 'venda';
+    const nome = `comprovante-${tipo}-${dados.venda.numero}.pdf`;
+    try {
+      await baixarPdfComprovante('comprovante-content', nome);
+      toast.success(`PDF ${nome} gerado`);
+    } catch {
+      toast.error('Falha ao gerar o PDF');
+    }
   }
 
   function handleWhatsApp() {
