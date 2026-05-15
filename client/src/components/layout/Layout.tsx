@@ -16,7 +16,7 @@ export default function Layout() {
       <Sidebar />
 
       <main className="relative z-10 ml-60 min-h-screen pt-20">
-        <div className="w-full px-8 py-6">
+        <div className="w-full px-3 py-3">
           <Outlet />
         </div>
       </main>
