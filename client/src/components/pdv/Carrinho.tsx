@@ -174,11 +174,13 @@ export default function Carrinho() {
         <BuscaProduto />
       </div>
 
-      {/* Bloco horizontal: Financeiro | Desconto | Totais
-         Em modo VENDA, 3 colunas (Financeiro | Desconto | Totais).
-         Em modo ORÇAMENTO, Financeiro some e ficamos com Desconto | Totais. */}
+      {/* Bloco horizontal: Financeiro | Desconto | Totais.
+         Em VENDA → 3 colunas (Financeiro 1fr | Desconto auto | Totais 1fr).
+         Em ORÇAMENTO → 2 colunas (Desconto assume o lado esquerdo, Totais
+         continua à direita). `items-start` mantém o topo dos 3 blocos
+         alinhado independente da altura do conteúdo de cada um. */}
       <div
-        className={`grid gap-6 border-t border-border bg-card/60 px-4 py-4 ${
+        className={`grid items-start gap-6 border-t border-border bg-card/60 px-4 py-4 ${
           ehOrcamento
             ? 'grid-cols-[auto_1fr]'
             : 'grid-cols-[1fr_auto_1fr]'
