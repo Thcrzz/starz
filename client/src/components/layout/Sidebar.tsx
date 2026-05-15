@@ -11,8 +11,6 @@ import {
   Megaphone,
   TrendingUp,
   Settings,
-  ChevronLeft,
-  ChevronRight,
   type LucideIcon,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -69,56 +67,39 @@ const SECOES: Secao[] = [
   },
 ];
 
-interface SidebarProps {
-  colapsada: boolean;
-  onToggle: () => void;
-}
-
-export default function Sidebar({ colapsada, onToggle }: SidebarProps) {
+/**
+ * Sidebar fixa à esquerda começando logo abaixo da Topbar (top-20).
+ * Glass effect (mesmo blur+saturate da Topbar), border direita sutil,
+ * hover translada o item levemente pra direita e item ativo ganha
+ * borda esquerda laranja + fundo primary/10.
+ */
+export default function Sidebar() {
   const usuario = useAuthStore((s) => s.usuario);
   const ehAdmin = usuario?.perfil === 'admin';
 
   return (
     <aside
-      className={cn(
-        'flex h-screen flex-col border-r border-border bg-card transition-[width] duration-200',
-        colapsada ? 'w-16' : 'w-60',
-      )}
+      className="fixed left-0 top-20 z-40 flex h-[calc(100vh-5rem)] w-60 flex-col border-r"
+      style={{
+        borderColor: 'rgba(255, 255, 255, 0.08)',
+        backgroundColor: 'rgba(255, 255, 255, 0.03)',
+        backdropFilter: 'blur(12px) saturate(180%)',
+        WebkitBackdropFilter: 'blur(12px) saturate(180%)',
+        boxShadow: 'inset -1px 0 0 rgba(255, 255, 255, 0.03)',
+      }}
     >
-      <div
-        className={cn(
-          'flex h-16 items-center border-b border-border',
-          colapsada ? 'justify-center px-2' : 'justify-between px-4',
-        )}
-      >
-        {!colapsada && (
-          <img
-            src="/Logo_Korta_Terra_Primario_Laranja_0,75.png"
-            alt="Korta Terra"
-            className="h-8 w-auto"
-          />
-        )}
-        <button
-          onClick={onToggle}
-          className="flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label={colapsada ? 'Expandir menu' : 'Recolher menu'}
-        >
-          {colapsada ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-        </button>
-      </div>
-
-      <nav className="flex-1 overflow-y-auto py-4 min-h-0">
+      <nav className="min-h-0 flex-1 overflow-y-auto py-4">
         {SECOES.map((secao) => {
-          const itensVisiveis = secao.itens.filter((i) => !i.apenasAdmin || ehAdmin);
+          const itensVisiveis = secao.itens.filter(
+            (i) => !i.apenasAdmin || ehAdmin,
+          );
           if (itensVisiveis.length === 0) return null;
 
           return (
             <div key={secao.titulo} className="mb-4">
-              {!colapsada && (
-                <div className="px-4 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  {secao.titulo}
-                </div>
-              )}
+              <div className="px-4 pb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {secao.titulo}
+              </div>
               <ul className="space-y-0.5 px-2">
                 {itensVisiveis.map((item) => {
                   const Icone = item.icone;
@@ -126,19 +107,17 @@ export default function Sidebar({ colapsada, onToggle }: SidebarProps) {
                     <li key={item.rota}>
                       <NavLink
                         to={item.rota}
-                        title={colapsada ? item.rotulo : undefined}
                         className={({ isActive }) =>
                           cn(
-                            'flex items-center gap-3 rounded-md px-3 py-2 text-sm font-medium transition-colors',
-                            colapsada && 'justify-center px-2',
+                            'flex items-center gap-3 px-3 py-2 text-sm font-medium transition-all duration-200 hover:translate-x-1 hover:bg-white/5',
                             isActive
-                              ? 'bg-primary/15 text-primary'
-                              : 'text-muted-foreground hover:bg-accent hover:text-foreground',
+                              ? 'border-l-2 border-primary bg-primary/10 text-primary'
+                              : 'text-muted-foreground hover:text-foreground',
                           )
                         }
                       >
                         <Icone className="h-4 w-4 shrink-0" />
-                        {!colapsada && <span>{item.rotulo}</span>}
+                        <span>{item.rotulo}</span>
                       </NavLink>
                     </li>
                   );
@@ -149,12 +128,13 @@ export default function Sidebar({ colapsada, onToggle }: SidebarProps) {
         })}
       </nav>
 
-      {!colapsada && (
-        <div className="flex items-center justify-center gap-2 border-t border-border px-4 py-3">
-          <span className="text-xs text-muted-foreground">Powered by</span>
-          <img src="/STARZ LOGO Vermelha.png" alt="STARZ" className="h-4 w-auto" />
-        </div>
-      )}
+      <div
+        className="flex items-center justify-center gap-2 border-t px-4 py-3"
+        style={{ borderColor: 'rgba(255, 255, 255, 0.08)' }}
+      >
+        <span className="text-xs text-muted-foreground">Powered by</span>
+        <img src="/STARZ LOGO Vermelha.png" alt="STARZ" className="h-4 w-auto" />
+      </div>
     </aside>
   );
 }
