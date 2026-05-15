@@ -1,70 +1,25 @@
-import { useState } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
-import { LogOut } from 'lucide-react';
+import { Outlet } from 'react-router-dom';
+import BackgroundEffects from './BackgroundEffects';
 import Sidebar from './Sidebar';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
-import { useAuthStore } from '@/store/authStore';
+import Topbar from './Topbar';
 
+/**
+ * Layout principal: BackgroundEffects atrás de tudo (z-0), Topbar fixa no
+ * topo (z-40), Sidebar fixa à esquerda começando abaixo da topbar (z-40).
+ * Main com margem-esquerda 60 (sidebar) e padding-top 80 (topbar).
+ */
 export default function Layout() {
-  const navigate = useNavigate();
-  const usuario = useAuthStore((s) => s.usuario);
-  const logout = useAuthStore((s) => s.logout);
-  const [colapsada, setColapsada] = useState(false);
-
-  function handleLogout() {
-    logout();
-    navigate('/login', { replace: true });
-  }
-
-  const iniciais =
-    usuario?.nome
-      ?.split(' ')
-      .filter(Boolean)
-      .slice(0, 2)
-      .map((p) => p[0])
-      .join('')
-      .toUpperCase() ?? '?';
-
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-background">
-      <Sidebar colapsada={colapsada} onToggle={() => setColapsada((c) => !c)} />
+    <div className="relative min-h-screen text-foreground">
+      <BackgroundEffects />
+      <Topbar />
+      <Sidebar />
 
-      <div className="flex flex-1 flex-col overflow-hidden">
-        <header className="flex h-16 items-center justify-between border-b border-border bg-card px-6">
-          <div className="text-sm text-muted-foreground">Sistema Korta Terra</div>
-
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2">
-              <Avatar className="h-8 w-8">
-                <AvatarFallback className="bg-primary/15 text-xs font-semibold text-primary">
-                  {iniciais}
-                </AvatarFallback>
-              </Avatar>
-              <div className="hidden sm:block">
-                <div className="text-sm font-medium leading-none">{usuario?.nome}</div>
-                <div className="text-xs text-muted-foreground">
-                  {usuario?.perfil === 'admin' ? 'Administrador' : 'Usuário'}
-                </div>
-              </div>
-            </div>
-
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={handleLogout}
-              className="text-muted-foreground"
-            >
-              <LogOut className="h-4 w-4" />
-              <span className="hidden sm:inline">Sair</span>
-            </Button>
-          </div>
-        </header>
-
-        <main className="flex-1 overflow-auto">
+      <main className="relative z-10 ml-60 min-h-screen pt-20">
+        <div className="w-full px-8 py-6">
           <Outlet />
-        </main>
-      </div>
+        </div>
+      </main>
     </div>
   );
 }
