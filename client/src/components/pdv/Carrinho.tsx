@@ -57,11 +57,6 @@ export default function Carrinho() {
         </div>
       </div>
 
-      {/* Busca */}
-      <div className="border-b border-border bg-card/50 p-3">
-        <BuscaProduto />
-      </div>
-
       {/* Tabela: cabeçalho + área scrollable com linhas */}
       <div className="flex-1 overflow-hidden">
         {/* Cabeçalho fixo */}
@@ -82,7 +77,7 @@ export default function Carrinho() {
         <div className="min-h-[300px] overflow-y-auto bg-zinc-700/20">
           {itens.length === 0 ? (
             <div className="flex h-full min-h-[300px] items-center justify-center px-4 text-center text-sm text-muted-foreground">
-              Adicione produtos usando a busca acima
+              Adicione produtos usando a busca abaixo
             </div>
           ) : (
             itens.map((item, idx) => {
@@ -185,6 +180,11 @@ export default function Carrinho() {
             })
           )}
         </div>
+      </div>
+
+      {/* Busca de produto — agora abaixo da tabela, separada por divider */}
+      <div className="border-t border-border bg-card/40 p-3">
+        <BuscaProduto />
       </div>
 
       {/* Rodapé: subtotal + desconto + total
