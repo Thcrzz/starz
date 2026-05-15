@@ -49,10 +49,12 @@ export default function Carrinho() {
         </div>
       </div>
 
-      {/* Tabela: cabeçalho fixo + área scrollable com linhas */}
-      <div className="flex-1 overflow-hidden">
+      {/* Tabela: scroll único contendo o cabeçalho sticky + as linhas
+         (ou a mensagem de estado vazio). Só essa área rola — o resto do
+         card fica fixo. */}
+      <div className="flex-1 min-h-0 overflow-y-auto bg-zinc-700/20">
         <div
-          className={`grid ${GRID_COLS} gap-x-2 border-b border-border px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground`}
+          className={`sticky top-0 z-10 grid ${GRID_COLS} gap-x-2 border-b border-border bg-card px-3 py-2 text-xs uppercase tracking-wider text-muted-foreground`}
         >
           <div className="text-left">#</div>
           <div className="text-left">Produto</div>
@@ -63,13 +65,12 @@ export default function Carrinho() {
           <div></div>
         </div>
 
-        <div className="min-h-[300px] overflow-y-auto bg-zinc-700/20">
-          {itens.length === 0 ? (
-            <div className="flex h-full min-h-[300px] items-center justify-center px-4 text-center text-sm text-muted-foreground">
-              Adicione produtos usando a busca abaixo
-            </div>
-          ) : (
-            itens.map((item, idx) => {
+        {itens.length === 0 ? (
+          <div className="flex items-center justify-center px-4 py-16 text-center text-sm text-muted-foreground">
+            Adicione produtos usando a busca abaixo
+          </div>
+        ) : (
+          itens.map((item, idx) => {
               const precoAlterado =
                 item.preco_unitario !== item.preco_original;
               const passoQtd =
@@ -163,7 +164,6 @@ export default function Carrinho() {
             })
           )}
         </div>
-      </div>
 
       {/* Busca de produto — abaixo da tabela */}
       <div className="border-t border-border bg-card/40 p-3">
