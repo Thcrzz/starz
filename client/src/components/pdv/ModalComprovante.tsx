@@ -366,7 +366,8 @@ export default function ModalComprovante({
               })}
             </tbody>
             <tfoot>
-              {/* Linha SUBTOTAL — "SUBTOTAL" sob Preço Unit., qtd sob Quant. */}
+              {/* Linha SUBTOTAL — "SUBTOTAL" sob Preço Unit., qtd sob Quant.,
+                  desconto geral sob Desconto, valor do subtotal sob Total. */}
               <tr
                 className="row-subtotal bg-[#f5f5f5] font-bold"
                 style={{ backgroundColor: '#f5f5f5' }}
@@ -392,9 +393,11 @@ export default function ModalComprovante({
                   {venda.itens.length}
                 </td>
                 <td
-                  className="px-2 py-1"
+                  className="px-2 py-1 text-right"
                   style={{ backgroundColor: '#f5f5f5' }}
-                ></td>
+                >
+                  {formatMoney(venda.desconto)}
+                </td>
                 <td
                   className="px-2 py-1 text-right"
                   style={{ backgroundColor: '#f5f5f5' }}
