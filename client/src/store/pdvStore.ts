@@ -137,8 +137,40 @@ export const usePDVStore = create<PDVStore>((set, get) => ({
   setTipoOperacao: (tipo) => set({ tipo_operacao: tipo }),
 
   setTipoDesconto: (tipo) =>
-    // troca o tipo e zera o valor — evita interpretação ambígua do número anterior
-    set({ tipo_desconto: tipo, desconto_geral: 0 }),
+    // Troca o tipo CONVERTENDO o valor pra preservar o desconto absoluto
+    // aplicado. Subtotal = soma dos total_item (com desconto_item já aplicado
+    // mas SEM o desconto geral). No-op quando tipo já é o atual; em % o
+    // resultado é clampado em [0, 100] e arredondado a 2 casas (permite
+    // frações como 10,5%).
+    set((state) => {
+      if (tipo === state.tipo_desconto) return {};
+
+      const subtotal = state.itens.reduce(
+        (acc, i) => acc + (i.total_item || 0),
+        0,
+      );
+
+      if (tipo === 'valor') {
+        // %  →  R$ : valor absoluto = subtotal * (porcentagem / 100)
+        const valorAbs =
+          subtotal > 0 ? subtotal * (state.desconto_geral / 100) : 0;
+        return {
+          tipo_desconto: 'valor',
+          desconto_geral: Math.round(Math.max(0, valorAbs) * 100) / 100,
+        };
+      }
+
+      // R$  →  %
+      if (subtotal <= 0) {
+        return { tipo_desconto: 'porcentagem', desconto_geral: 0 };
+      }
+      const pct = (state.desconto_geral / subtotal) * 100;
+      const pctClamped = Math.min(100, Math.max(0, pct));
+      return {
+        tipo_desconto: 'porcentagem',
+        desconto_geral: Math.round(pctClamped * 100) / 100,
+      };
+    }),
 
   adicionarPagamento: (forma, valor, parcelas) =>
     set((state) => {
