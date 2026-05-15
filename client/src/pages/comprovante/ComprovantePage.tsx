@@ -83,6 +83,8 @@ export default function ComprovantePage() {
   const [emailOpen, setEmailOpen] = useState(false);
   const [emailDest, setEmailDest] = useState('');
 
+  const [loadingPdf, setLoadingPdf] = useState(false);
+
   useEffect(() => {
     const id = Number(vendaId);
     if (!Number.isInteger(id) || id <= 0) {
@@ -116,11 +118,16 @@ export default function ComprovantePage() {
     if (!dados) return;
     const tipo = ehOrcamento ? 'orcamento' : 'venda';
     const nome = `comprovante-${tipo}-${dados.venda.numero}.pdf`;
+    setLoadingPdf(true);
     try {
       await baixarPdfComprovante('comprovante-content', nome);
       toast.success(`PDF ${nome} gerado`);
-    } catch {
-      toast.error('Falha ao gerar o PDF');
+    } catch (err) {
+      console.error('Erro ao gerar PDF:', err);
+      const msg = err instanceof Error ? err.message : 'erro desconhecido';
+      toast.error(`Erro ao gerar PDF: ${msg}`);
+    } finally {
+      setLoadingPdf(false);
     }
   }
 
@@ -229,10 +236,15 @@ export default function ComprovantePage() {
               size="sm"
               variant="outline"
               onClick={handleBaixarPdf}
-              disabled={!dados}
+              disabled={!dados || loadingPdf}
               className="border-zinc-700 bg-transparent text-zinc-200 hover:bg-white/5 hover:text-white"
             >
-              <Download className="mr-1 h-4 w-4" /> Baixar PDF
+              {loadingPdf ? (
+                <Loader2 className="mr-1 h-4 w-4 animate-spin" />
+              ) : (
+                <Download className="mr-1 h-4 w-4" />
+              )}{' '}
+              Baixar PDF
             </Button>
             <Button
               size="sm"
